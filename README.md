@@ -61,7 +61,7 @@ export default function App(props) {
 
 #### main export: 
 
-`useModels( defaultState={}, autoAssign=true )` 
+`useModels( Object defaultState={}, Boolean autoAssign=true )` 
 > initializes the state of the component, returning helper functions for use in your component.
 > NOTE: must be called from within a functional component.
     
@@ -70,23 +70,24 @@ export default function App(props) {
 - `autoAssign` - if `defaultState` is an empty object and `autoAssign` is true, each call to one of the helper functions will create the default value in the state object automatically, if the value doesn't yet exist for that path.
 
 **returns**
- - An object with helper functions `{input,checkbox,radio,submit}`
+- An object with helper functions `{input,checkbox,radio,submit,getState,setState}`
 
- #### helper:
+#### helper:
 
- - `input( String name, String type='text' )` - for use with `input`, `select`, `textarea` and other components. returns `props` for use on inputs.
+- `input( String name, String type='text' )` - for use with `input`, `select`, `textarea` and other components. returns `props` for use on inputs.
    - `name` - the path of the model. nesting is supported. examples of valid paths: `firstname` or `book.author.firstname` or `post.comments.0.text`. 
    - `type` - the type attribute for the input. defaults to `text`
- - `checkbox( String name,Any truevalue=true,Any falsevalue=false )` - to be used for checkbox components, whether native or custom. returns `props` for use on inputs.
+- `checkbox( String name,Any truevalue=true,Any falsevalue=false )` - to be used for checkbox components, whether native or custom. returns `props` for use on inputs.
    - `name` - see description under `input`
    - `truevalue` - the value for the field if checkbox is checked. defaults to `true`
    - `falsevalue` - the value for the field if checkbox is unchecked. defaults to `false`
--  `radio( String name, Any value=null )` - for use with radio components, whether native or custom. value is the value to assign to the state if the radio is checked. returns `props` for use on inputs.
+- `radio( String name, Any value=null )` - for use with radio components, whether native or custom. value is the value to assign to the state if the radio is checked. returns `props` for use on inputs.
    - `name` - see description under `input`
    - `value` - the value of the field if the checkbox is checked. 
 - `submit( Function callback )` - given a callback, this method returns an `onSubmit` handler for your form. the passed `callback` will be called with the `state` object. 
    - `callback` - a function to be called when the form is submitted.
-
+- `getState` - retrieves the `state` object programatically.
+- `setState( Object newState )` - allows you to programatically manipulate the state.
 
 
 ## License
