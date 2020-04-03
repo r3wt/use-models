@@ -12,3 +12,40 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+pre {
+    background: #222;
+    color: #ccc;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.example {
+    display:flex;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+.example form {
+    width: 400px;
+    max-width:100%;
+    margin: 25px auto;
+}
+.form-group,.form-group-check {
+    margin-bottom: 15px;
+}
+.form-group > label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 3px;
+}
+.form-group input[type='text'],
+.form-group input[type='email'] {
+    height: 36px;
+    width: 100%;
+    font-size: 16px;
+    padding: 4px 12px;
+}
+.form-group.with-nested > label {
+    margin-bottom: 15px;
+}

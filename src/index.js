@@ -81,7 +81,11 @@ export default function useModels(defaultState={}) {
         };
         
     };
+
+    function getState() {
+        return state;
+    }
     
-    return {input,checkbox,radio,submit};
+    return {input,checkbox,radio,submit,getState,setState};
 
 };
