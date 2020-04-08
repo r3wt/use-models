@@ -1,38 +1,31 @@
 import React from 'react'
 
-import useModels,{extendValidators,enableDebug} from 'use-models';
+import useModels,{ model, extendValidators } from 'use-models';
 
-enableDebug();
-
-function checkIfUserNameExists( value, err) {
+extendValidators('checkUsername',function checkIfUserNameExists( value ) {
     return new Promise((resolve,reject)=>{
         setTimeout(()=>{
             reject(new Error('That username is taken'));
         },200);
     });
-}
+});
 
-export default function App(props) {
+export default function App() {
 
-    const {input,checkbox,radio,submit,error,getState,getErrors,useValidation} = useModels({
-        name:'',
-        username:'',
-        email:'',
-        remember:false,
-        newsletter:'no'
-    });
+    console.log('App.render()');
 
-    // errors is a state object that can be read to show when a form has an error.
-    useValidation({
-        name:( value ) => {
+    const { 
+        state, errors, input, checkbox, radio, submit, error, watch 
+    } = useModels({
+        name: model('',value => {
             if( value.length<5 ){
                 return 'Name must be at least 5 characters';
             }
-        }, //custom function based validator
-        email:'email', //built in validator
-        username:( value ) => {
-            return checkIfUserNameExists(value)
-        }// showing async validation
+        }),
+        username: model('','checkUsername'),
+        email: model('','email'),
+        remember: false,
+        newsletter: 'no'
     });
 
     const onSubmit = submit(state=>{
@@ -43,8 +36,6 @@ export default function App(props) {
     const onError = error((errors,state)=>{
         //do something on form submit error
     });
-    const state = getState();
-    const errors = getErrors();
 
     return (
         <div className="example">

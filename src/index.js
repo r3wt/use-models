@@ -5,16 +5,11 @@ function extendValidators( name, fn ) {
     validators[name] = fn;
 };
 
-var debugMode=false;
-function enableDebug( v ) {
-    debugMode=true
+function model( value, ...validators) {
+    return { value, validators };
 }
 
-function log(...args){
-    debugMode && console.log(...args);
-}
-
-export {extendValidators,enableDebug};
+export { extendValidators, model };
 
 const has = (o,k) => o[k]!==undefined;
 
@@ -37,7 +32,7 @@ const getValidationPaths = (options) => {
             paths[k]=[paths[k]];
         }
     }
-    log('validationPaths',paths);
+    console.log('validationPaths',paths);
     return paths;
 }
 
@@ -69,53 +64,94 @@ function oSet(o,v) {
     return o;
 }
 
-export default function useModels(defaultState={}) {
+function assignValues( optPointer, statePointer, errorPointer ) {
+    for(let k in optPointer) {
+        console.log(k,optPointer[k]);
+        if(typeof optPointer[k]==='object'&&optPointer[k]!==null){
+            let shouldRecurse=true;
+            if(has(optPointer[k],'value')){
+                statePointer[k]=optPointer[k].value;
+                shouldRecurse=false;
+            }
+            if(has(optPointer[k],'validators')){
+                errorPointer[k]=optPointer[k].validators;
+                shouldRecurse=false;
+            }
+            if(shouldRecurse){
+                if(!has(statePointer,k)){
+                    statePointer[k]={};
+                }
+                if(!has(errorPointer,k)){
+                    errorPointer[k]={};
+                }
+                assignValues(optPointer[k],statePointer[k],errorPointer[k]);
+            }
+        }else{
+            statePointer[k]=optPointer[k];
+        }
+    }
+} 
+
+function parseOptions ( opts ) {
+    const defaultState = {};
+    const errorOptions = {};
+    assignValues(opts,defaultState,errorOptions);//this recursive function will populate defaultState and errorOptions for us.
+    const errorState = oSet({...defaultState},false);
+    const validationPaths = getValidationPaths(errorOptions);
+    console.log(defaultState,errorState,validationPaths);
+    return {defaultState,errorState,validationPaths};
+}
+
+export default function useModels(options={}) {
+
+    const {defaultState,errorState,validationPaths} = parseOptions(options);
 
     const [state,setState] = useState(defaultState);
-    const [errors,setErrors] = useState(oSet({...defaultState},false));
-    log(state,errors);
+    const [errors,setErrors] = useState(errorState);
 
-    let validationPaths = null;
-    let validate = ()=>new Promise(resolve=>resolve(0));
-    let errorHandler =()=>{};
-    function useValidation( options ) {
-        log('useValidation()');
-        validationPaths = getValidationPaths(options);
-        validate = async () => {
-            log('validate()');
-            const errs=[];
-            for(let k in validationPaths){
-                for(let i =0;i<validationPaths[k].length;i++){
-                    try{
-                        await execValidator(validationPaths[k][i],getValue(k));
-                    }
-                    catch(e){
-                        errs.push({field:k,error:e});
-                    }
+    console.log(state,errors);
+
+    const validate = async () => {
+        console.log('validate()');
+        const errs=[];
+        for(let k in validationPaths){
+            for(let i=0;i<validationPaths[k].length;i++){
+                try{
+                    await execValidator(validationPaths[k][i],getValue(k));
+                }
+                catch(e){
+                    errs.push({field:k,error:e});
                 }
             }
-
-            log('got results',errs);
-            let errState = oSet({...defaultState},false);
-            log('errState is',errState);
-            if(errs.length){
-                log('got %d errors',errs.length);
-                errs.forEach(err=>{
-                    log('looking at errors',err.field,err.error);
-                    err.error=typeof err.error!='string'?err.error.message:err.error;
-                    errState=getUpdate(err.field,err.error,errState);
-                });
-            }
-            log(errState);
-            setErrors(errState);    
-            return errs;
-
         }
-        log(validationPaths);
+
+        console.log('got results',errs);
+        let errState = oSet({...defaultState},false);
+        console.log('errState is',errState);
+        if(errs.length){
+            console.log('got %d errors',errs.length);
+            errs.forEach(err=>{
+                console.log('looking at errors',err.field,err.error);
+                err.error=typeof err.error!='string'?err.error.message:err.error;
+                errState=getUpdate(err.field,err.error,errState);
+            });
+        }
+        console.log(errState);
+        setErrors(errState);    
+        return errs;
+
+    }
+
+    let errorHandler =()=>{};
+
+    function useValidation( options ) {
+        console.log('useValidation()');
+        validationPaths = getValidationPaths(options);
+        console.log('generatedValidationPaths',validationPaths);
     }
 
     function getValue(name) {
-        log('getValue()');
+        console.log('getValue()');
         const path = parsePath(name);
         let value = state;
         for(let i=0;i<path.length;i++) {
@@ -125,7 +161,7 @@ export default function useModels(defaultState={}) {
     }
 
     function getUpdate(name,value,__state=state) {
-        log('getUpdate()');
+        console.log('getUpdate()');
         const _state = {...__state};
         const path = parsePath(name);
         if(path.length){
@@ -139,10 +175,10 @@ export default function useModels(defaultState={}) {
     }
 
     function input(name,type="text",..._validators){
-        log('input()')
+        console.log('input()')
         return {
             onChange: (e)=>{
-                console.log(e);
+                console.console.log(e);
                 var value = e;//components like react-select-me pass primitive values
                 if(has(e,'value')){
                     value = e.value;
@@ -161,7 +197,7 @@ export default function useModels(defaultState={}) {
     };
 
     function checkbox(name,truevalue=true,falsevalue=false){
-        log('checkbox()');
+        console.log('checkbox()');
         return {
             onChange: (e)=>setState(getUpdate(name,e.target.checked?truevalue:falsevalue)),
             checked: getValue(name)===truevalue,
@@ -172,7 +208,7 @@ export default function useModels(defaultState={}) {
     };
 
     function radio(name,value=null){
-        log('radio()');
+        console.log('radio()');
         return {
             onChange: (e)=>e.target.checked && setState(getUpdate(name,value)),
             checked:  getValue(name)===value,
@@ -183,9 +219,9 @@ export default function useModels(defaultState={}) {
     };
 
     function submit(cb){
-        log('submit()')
+        console.log('submit()')
         return async e=>{
-            log('onSubmit()');
+            console.log('onSubmit()');
             e.preventDefault();
             const errs = await validate();
             console.log('got result from validate()',errs);
@@ -200,24 +236,28 @@ export default function useModels(defaultState={}) {
     };
 
     function error(cb) {
-        log('error()');
+        console.log('error()');
         errorHandler=cb;
         return e=>{
-            log('errorHandler()');
+            console.log('errorHandler()');
             cb(errors,state);
         };
     }
 
     function getState() {
-        log('getState()');
+        console.log('getState()');
         return state;
     }
 
     function getErrors(){
-        log('getErrors()');
+        console.log('getErrors()');
         return errors;
     }
+
+    function watch( path, fn ) {
+        
+    }
     
-    return {input,checkbox,radio,submit,error,getState,getErrors,setState,useValidation};
+    return { input,checkbox,radio,submit,error, getState, getErrors, setState, setErrors, errors, state, watch };
 
 };
