@@ -1,12 +1,12 @@
-import {useState,useMemo} from 'react';
+import { useState } from 'react';
 import validators from './lib/validators';
 
 function extendValidators( name, fn ) {
     validators[name] = fn;
 };
 
-function model( value, ...validators) {
-    return { value, validators };
+function model( value, ...validate) {
+    return { value, validate };
 }
 
 export { extendValidators, model };
@@ -73,8 +73,8 @@ function assignValues( optPointer, statePointer, errorPointer ) {
                 statePointer[k]=optPointer[k].value;
                 shouldRecurse=false;
             }
-            if(has(optPointer[k],'validators')){
-                errorPointer[k]=optPointer[k].validators;
+            if(has(optPointer[k],'validate')){
+                errorPointer[k]=optPointer[k].validate;
                 shouldRecurse=false;
             }
             if(shouldRecurse){
@@ -105,6 +105,7 @@ function parseOptions ( opts ) {
 export default function useModels(options={}) {
 
     const {defaultState,errorState,validationPaths} = parseOptions(options);
+    const watchPaths={};
 
     const [state,setState] = useState(defaultState);
     const [errors,setErrors] = useState(errorState);
@@ -174,11 +175,11 @@ export default function useModels(options={}) {
         return _state;    
     }
 
-    function input(name,type="text",..._validators){
+    function input(name,type="text"){
         console.log('input()')
         return {
             onChange: (e)=>{
-                console.console.log(e);
+                console.log(e);
                 var value = e;//components like react-select-me pass primitive values
                 if(has(e,'value')){
                     value = e.value;
@@ -188,7 +189,11 @@ export default function useModels(options={}) {
                     value = e.target.value;//normal inputs dont
                 }
                 console.log(value);
-                setState(getUpdate(name,value))
+                const oldValue = getValue(name);
+                setState(getUpdate(name,value));
+                if(watchPaths[name]){
+                    watchPaths[name](value,oldValue);
+                }
             },
             value: getValue(name),
             name,
@@ -199,7 +204,14 @@ export default function useModels(options={}) {
     function checkbox(name,truevalue=true,falsevalue=false){
         console.log('checkbox()');
         return {
-            onChange: (e)=>setState(getUpdate(name,e.target.checked?truevalue:falsevalue)),
+            onChange: (e)=>{
+                const newValue = e.target.checked?truevalue:falsevalue;
+                const oldValue = getValue(name);
+                setState(getUpdate(name,nextValue));
+                if(watchPaths[name]){
+                    watchPaths[name](newValue,oldValue);
+                }
+            },
             checked: getValue(name)===truevalue,
             type:'checkbox',
             name,
@@ -210,7 +222,16 @@ export default function useModels(options={}) {
     function radio(name,value=null){
         console.log('radio()');
         return {
-            onChange: (e)=>e.target.checked && setState(getUpdate(name,value)),
+            onChange: (e)=>{
+                if(e.target.checked){
+                    const newValue = value;
+                    const oldValue = getValue(name);
+                    setState(getUpdate(name,value))
+                    if(watchPaths[name]){
+                        watchPaths[name](newValue,oldValue);
+                    }
+                }
+            },
             checked:  getValue(name)===value,
             type:'radio',
             name,
@@ -255,9 +276,19 @@ export default function useModels(options={}) {
     }
 
     function watch( path, fn ) {
-        
+        watchPaths[path]=fn;
+        return function unwatch(){
+            delete watchPaths[path];
+        }
     }
+
+    function hydrate( _state, errors=false) {
+        setState({...state,..._state});
+        if(errors){
+            setState(errors);
+        }
+    } 
     
-    return { input,checkbox,radio,submit,error, getState, getErrors, setState, setErrors, errors, state, watch };
+    return { input, checkbox, radio, submit, error, getState, getErrors, setState, setErrors, errors, state, watch, hydrate };
 
 };

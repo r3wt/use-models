@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import useModels,{ model, extendValidators } from 'use-models';
 
@@ -15,7 +15,7 @@ export default function App() {
     console.log('App.render()');
 
     const { 
-        state, errors, input, checkbox, radio, submit, error, watch 
+        state, errors, input, checkbox, radio, submit, error, watch, hydrate
     } = useModels({
         name: model('',value => {
             if( value.length<5 ){
@@ -28,6 +28,15 @@ export default function App() {
         newsletter: 'no'
     });
 
+    //we can hydrate the state(and errors), for example from localstorage or a db call
+    useEffect(()=>{
+        hydrate({
+            name:'Garrett',
+            email:'test@test.com',
+            newsletter: 'yes'
+        });
+    },[]);
+
     const onSubmit = submit(state=>{
         //do something with your form data
         console.log(state);
@@ -36,6 +45,10 @@ export default function App() {
     const onError = error((errors,state)=>{
         //do something on form submit error
     });
+
+    const unwatch = watch('username',(value,previousValue)=>{
+        console.log('username changed from %s to %s',previousValue,value);
+    }); // returns a function that unregisters the watcher.
 
     return (
         <div className="example">

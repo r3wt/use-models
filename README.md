@@ -10,77 +10,30 @@
 npm install --save use-models
 ```
 
+## Features
+
+- form helpers `input`, `checkbox`, and `radio` which wire up your form elements to state with path syntax, eg `book.author.firstname`
+- form validation supporting built in validators, custom validators, async validators, and ability to extend built in validators for usage across project.
+- ability to hydrate state using the `hydrate` function, useful for syncing from api or from localstorage, or whatever you need. 
+- 
+
 ## Usage
 
+1. **Basic Example** 
+
 ```jsx
-import React from 'react';
+// code to come
+```
 
-import useModels from 'use-models';
+2. **Validation Example**
 
-function checkIfUserNameExists( value, err) {
-    return new Promise((resolve,reject)=>{
-        setTimeout(()=>{
-            reject('That username is taken');
-        },200);
-    });
-}
+```jsx
+// code to come
+```
 
-export default function App(props) {
-
-    const {input,checkbox,radio,submit,error,useValidation} = useModels({
-        name:'',
-        username:'',
-        email:'',
-        remember:false,
-        newsletter:'no'
-    });
-
-    // errors is a state object that can be read to show when a form has an error.
-    const errors = useValidation({
-        name:( value ) => {
-            if( value.length<5 ){
-                return 'Name must be at least 5 characters';
-            }
-        }, //custom function based validator
-        email:'email', //built in validator
-        username:( value ) => {
-            return checkIfUserNameExists(value)
-        }// showing async validation
-    });
-
-    const onSubmit = submit(state=>{
-        //do something with your form data
-        console.log(state);
-    });
-
-    const onError = error((errors,state)=>{
-        //do something on form submit error
-    });
-
-    return (
-        <form onSubmit={onSubmit} onError={onError}>
-            <div>
-                <label>Name</label>
-                <input {...input('name')} />
-                { errors.name && <p class='help-text'>{errors.name}</p> }
-            </div>
-            <div>
-                <label>email</label>
-                <input {...input('email','email')} />
-            </div>
-            <div>
-                <input {...checkbox('remember')} /> <label>Remember me</label>
-            </div>
-            <div>
-                <label>Sign up for newsletter?</label><br/>
-                <input {...radio('newsletter','yes')} /> <label>Yes, Sign me up!</label><br/>
-                <input {...radio('newsletter','no')} /> <label>No thanks</label>
-            </div>
-            <button type="submit">Submit</button>
-        </form>
-    );
-    
-}
+3. comprehensive example (all features)
+```jsx
+// code to come
 ```
 
 ## API
@@ -88,20 +41,24 @@ export default function App(props) {
 
 #### main export: 
 
-`useModels( Object defaultState={}, Boolean autoAssign=true )` 
+`useModels( Object options={} )` 
 > initializes the state of the component, returning helper functions for use in your component.
 > NOTE: must be called from within a functional component.
     
 **arguments**
-- `defaultState` - declares the default state used by your component. supports nested objects and arrays.
-- `autoAssign` - if `defaultState` is an empty object and `autoAssign` is true, each call to one of the helper functions will create the default value in the state object automatically, if the value doesn't yet exist for that path.
+- `options` - declare your default state with options for each field. example syntax `{ name:'' }` or `{ name: { value:'', validators:[] }}`. you can also use the `model` helper like so `{ name: model(defaultValue,...validationFunctions)}` as a shorthand for declaring the value and validators for the field. 
 
 **returns**
-- An object with helper functions `{input,checkbox,radio,submit,error,getState,setState,useValidation}`
+- An object with helper functions `{ input, checkbox, radio, submit, error, getState, getErrors, setState, setErrors, errors, state, watch, hydrate }`
 
-#### helper:
+#### helpers (returned from `useModels()`):
 
-- `useValidation( Object options )` - you can optionally use this helper to configure form validation for one or more form inputs.
+- `hydrate( Object state[, Object errors] )` - allows you to hydrate your state with the data of your choice. you can optionally hydrate the errors as well.
+- `state` - this is the state object. you can use it to read/display data from the state for whatever reason you wish. (see examples)
+- `errors` - this is the errors object. you can use it to read data from the errors and display the error messages. (see examples)
+- `watch( String name, Function callback( Any newValue, Any oldValue ) )` - allows you to assign a watcher to a state field and be notified when its value changes. 
+   - `name` - the path of the model to watch. nesting is supported
+   - `callback` - the callback function to execute when the model changes. it will receive `newValue` and `oldValue` as arguments. 
 - `input( String name, String type='text' )` - for use with `input`, `select`, `textarea` and other components. returns `props` for use on inputs.
    - `name` - the path of the model. nesting is supported. examples of valid paths: `firstname` or `book.author.firstname` or `post.comments.0.text`. 
    - `type` - the type attribute for the input. defaults to `text`
@@ -117,7 +74,9 @@ export default function App(props) {
 - `error( Function callback( errors, state) )` - given a callback, this returns an `onError` handler for your form. if any native validation or custom validation errors occurs, you will receive that info here.
    - `callback` - a function to be called when an error occurs during form submit. 
 - `getState` - retrieves the `state` object programatically.
-- `setState( Object newState )` - allows you to programatically manipulate the state.
+- `setState( Object newState )` - allows you to programatically manipulate the state object.
+- `getErrors` - retrieves the `errors` object programatically.
+- `setErrors` - allows you to programatically manipulate the errors object.
 
 
 ## License
