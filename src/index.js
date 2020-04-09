@@ -102,6 +102,18 @@ function parseOptions ( opts ) {
     return {defaultState,errorState,validationPaths};
 }
 
+function stringifyErr( err ) {
+    if(typeof err ==='string'){
+        return err;
+    }else{
+        // Error, or Error like object(eg, custom error classes)
+        if(typeof err==='object' && has(err,'message')) {
+            return err.message;
+        }
+    }
+    return err.toString();//last resort
+}
+
 export default function useModels(options={}) {
 
     const {defaultState,errorState,validationPaths} = parseOptions(options);
@@ -133,8 +145,7 @@ export default function useModels(options={}) {
             console.log('got %d errors',errs.length);
             errs.forEach(err=>{
                 console.log('looking at errors',err.field,err.error);
-                err.error=typeof err.error!='string'?err.error.message:err.error;
-                errState=getUpdate(err.field,err.error,errState);
+                errState=getUpdate(err.field,stringifyErr(err.error),errState);
             });
         }
         console.log(errState);
@@ -143,13 +154,25 @@ export default function useModels(options={}) {
 
     }
 
-    let errorHandler =()=>{};
+    const validatePath = async (path,value) => {
+        console.log('validatePath()');
+        if(has(validationPaths,path)){
+            for(let i=0;i<validationPaths[path].length;i++){
+                try{
+                    await execValidator(validationPaths[path][i],value);
+                }
+                catch(e){
+                    console.log('gotError in validatePath()',e);
+                    return setErrors(getUpdate(path,stringifyErr(e),errors));
+                }
+            }
+            setErrors(getUpdate(path,false,errors));
+        }else{
+            console.log('no validation for field');
+        }
+    };
 
-    function useValidation( options ) {
-        console.log('useValidation()');
-        validationPaths = getValidationPaths(options);
-        console.log('generatedValidationPaths',validationPaths);
-    }
+    let errorHandler =()=>{};
 
     function getValue(name) {
         console.log('getValue()');
@@ -194,6 +217,7 @@ export default function useModels(options={}) {
                 if(watchPaths[name]){
                     watchPaths[name](value,oldValue);
                 }
+                validatePath(name,value);
             },
             value: getValue(name),
             name,
@@ -207,10 +231,11 @@ export default function useModels(options={}) {
             onChange: (e)=>{
                 const newValue = e.target.checked?truevalue:falsevalue;
                 const oldValue = getValue(name);
-                setState(getUpdate(name,nextValue));
+                setState(getUpdate(name,newValue));
                 if(watchPaths[name]){
                     watchPaths[name](newValue,oldValue);
                 }
+                validatePath(name,newValue);
             },
             checked: getValue(name)===truevalue,
             type:'checkbox',
@@ -230,6 +255,7 @@ export default function useModels(options={}) {
                     if(watchPaths[name]){
                         watchPaths[name](newValue,oldValue);
                     }
+                    validatePath(name,newValue);
                 }
             },
             checked:  getValue(name)===value,
@@ -276,16 +302,18 @@ export default function useModels(options={}) {
     }
 
     function watch( path, fn ) {
+        console.log('watch()')
         watchPaths[path]=fn;
         return function unwatch(){
             delete watchPaths[path];
         }
     }
 
-    function hydrate( _state, errors=false) {
+    function hydrate( _state, _errors=false) {
+        console.log('hydrate()');
         setState({...state,..._state});
-        if(errors){
-            setState(errors);
+        if(_errors){
+            setErrors({...errors,..._errors});
         }
     } 
     

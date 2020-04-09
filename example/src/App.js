@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import useModels,{ model, extendValidators } from 'use-models';
 
 extendValidators('checkUsername',function checkIfUserNameExists( value ) {
+    console.log('checkUsername()');
     return new Promise((resolve,reject)=>{
         setTimeout(()=>{
             reject(new Error('That username is taken'));
