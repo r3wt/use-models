@@ -306,7 +306,7 @@ export default function Example() {
             lastname:'Morris',
             email:'test@test.com'
         });
-    },[]);
+    },[hydrate]);// note: if you don't pass hydrate in as a dependency to useEffect(), the linter complains. 
 
     console.log(state);// on second render you will see state populated with the values passed to hydrate.
 

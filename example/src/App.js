@@ -36,7 +36,13 @@ export default function App() {
             email:'test@test.com',
             newsletter: 'yes'
         });
-    },[]);
+    },[hydrate]);
+
+    // hydrate({
+    //     name:'Garrett',
+    //     email:'test@test.com',
+    //     newsletter: 'yes'
+    // });
 
     const onSubmit = submit(state=>{
         //do something with your form data
@@ -47,7 +53,7 @@ export default function App() {
         //do something on form submit error
     });
 
-    const unwatch = watch('username',(value,previousValue)=>{
+    watch('username',(value,previousValue)=>{
         console.log('username changed from %s to %s',previousValue,value);
     }); // returns a function that unregisters the watcher.
 

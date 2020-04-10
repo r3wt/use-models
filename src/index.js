@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import validators from './lib/validators';
 
 function extendValidators( name, fn ) {
@@ -326,14 +326,18 @@ export default function useModels(options={}) {
         }
     }
 
-    function hydrate( _state, _errors=false) {
+    function get( name ){
+        return getValue( name );
+    }
+
+    const hydrate = useCallback(( _state, _errors=false )=> {
         console.log('hydrate()');
         setState({...state,..._state});
         if(_errors){
             setErrors({...errors,..._errors});
         }
-    } 
+    },[]);
     
-    return { input, checkbox, radio, submit, error, errors, state, watch, hydrate, set, getState, getErrors, setState, setErrors };
+    return { input, checkbox, radio, submit, error, errors, state, watch, hydrate, set, get, getState, getErrors, setState, setErrors };
 
 };
