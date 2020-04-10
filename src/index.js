@@ -114,6 +114,12 @@ function stringifyErr( err ) {
     return err.toString();//last resort
 }
 
+// const customInputMethods = {};
+
+// function createCustomInput( name, interface ) {
+//     customInputMethods[name]=interface;
+// }
+
 export default function useModels(options={}) {
 
     const {defaultState,errorState,validationPaths} = parseOptions(options);
@@ -309,6 +315,17 @@ export default function useModels(options={}) {
         }
     }
 
+    function set( name, value, validate=true,watchers=true ) {
+        const oldValue = getValue(name);
+        setState(getUpdate(name,value));
+        if(watchers && watchPaths[name]){
+            watchPaths[name](value,oldValue);
+        }
+        if(validate){
+            validatePath(name,value);
+        }
+    }
+
     function hydrate( _state, _errors=false) {
         console.log('hydrate()');
         setState({...state,..._state});
@@ -317,6 +334,6 @@ export default function useModels(options={}) {
         }
     } 
     
-    return { input, checkbox, radio, submit, error, getState, getErrors, setState, setErrors, errors, state, watch, hydrate };
+    return { input, checkbox, radio, submit, error, errors, state, watch, hydrate, set, getState, getErrors, setState, setErrors };
 
 };

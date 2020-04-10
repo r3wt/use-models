@@ -18,6 +18,9 @@ npm install --save use-models
 - ability to hydrate state using the `hydrate` function, useful for syncing from api or from localstorage, or whatever you need. 
 - ability to watch fields for changes with `watch` helper method, which receives `oldValue` and `newValue` as arguments.
 - `submit` and `error` functions that create handlers for your form's `onSubmit` and `onError` events. submit receives a copy of `state` and `errors` receives a list of form errors.
+- no dependencies (other than react ofc)
+- highly configurable/composable. 
+- plugin friendly, offering plenty of ways to "hook" into the library for custom functionality.
 
 ## Tutorial
 
@@ -290,7 +293,7 @@ import React,{useEffect} from 'react'
 import useModels from 'use-models'
 
 export default function Example() {
-    
+
     const { hydrate, state } = useModels({
         firstname:'',
         lastname:'',
@@ -360,6 +363,11 @@ export default function Example() {
 - `radio( String name, Any value=null )` - for use with radio components, whether native or custom. value is the value to assign to the state if the radio is checked. returns `props` for use on inputs.
    - `name` - see description under `input`
    - `value` - the value of the field if the checkbox is checked. 
+- `set( String name, Any value, Boolean validate=true, Boolean watchers=true )` - can be used to directly manipulate a given model.
+   - `name` - the path of the model to update. nesting is supported.
+   - `value` - the value to set for the model.
+   - `validate` - whether or not to run validators on the new value. defaults to `true`.
+   - `watchers` - whether or not to run watchers on the new value. defaults to `true`. 
 - `submit( Function callback( state ) )` - given a callback, this method returns an `onSubmit` handler for your form. the passed `callback` will be called with the `state` object. 
    - `callback` - a function to be called when the form is submitted.
 - `error( Function callback( errors, state) )` - given a callback, this returns an `onError` handler for your form. if any native validation or custom validation errors occurs, you will receive that info here.
