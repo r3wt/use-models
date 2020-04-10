@@ -71,13 +71,109 @@ export default function Example() {
             </form>
         </div>
     );
-    
+
 }
 ```
 
 2. adding validation 
 
+importing the model helper:
 ```jsx
+import React from 'react';
+import useModels,{model} from 'use-models';//we can add the model helper for ease in defining our models. this is optional, as options can be defined as a plain object as well
+```
+
+using model helper:
+
+```jsx
+const { 
+    input, // input ( path, type='text' )
+    checkbox, // checkbox( path, trueValue=true, falseValue=false )
+    radio // radio( path, value )
+} = useModels({
+    email_address: model('','email') // here we are declaring a field with default value of "" and a named validator called "email" which validates an email address.
+});
+```
+
+using a plain object:
+
+```jsx
+const { 
+    input, // input ( path, type='text' )
+    checkbox, // checkbox( path, trueValue=true, falseValue=false )
+    radio // radio( path, value )
+} = useModels({
+    email_address: { value: '', validate:['email'] }
+});
+```
+
+custom validator functions:
+
+```jsx
+const { 
+    input, // input ( path, type='text' )
+    checkbox, // checkbox( path, trueValue=true, falseValue=false )
+    radio // radio( path, value )
+} = useModels({
+    username: model('',value=>{
+        // we are passing a custom validator
+        // you should return a string or Error( Custom error classes and Error Like objects are ok too) for failing validation, else return a falsy value or nothing at all
+        // you can also return a promise for async validation, which will be shown in next example
+        if(value.length<5){
+            return 'Username must be atleast 5 characters in length. Choose a longer name';// you can return a string error message
+        }
+        if(value.length>30){
+            return new Error('Username cannot be longer than 30 characters in length. Choose a shorter name.');//showing returning an Error object
+        }
+
+    })
+}); 
+```
+
+async validator example:
+
+```jsx
+export default function Example() {
+    const { 
+        input, // input ( path, type='text' )
+        checkbox, // checkbox( path, trueValue=true, falseValue=false )
+        radio // radio( path, value )
+    } = useModels({
+        username: model('',async value=>{
+            return await new Promise((resolve,reject)=>{
+                setTimeout(()=>{
+                    reject(new Error('that username is taken. try a different name'))
+                },200);
+            });
+        })// simulating a network call to check if the username is available.
+    });
+
+    ...
+
+}
+```
+
+extending validators for shared re-use across your project:
+
+```jsx
+import useModels,{model,extendValidators} from 'use-models';
+
+extendValidators('myCustomValidator',value=>{
+    // your validation logic here
+});
+
+function Example() {
+    const { 
+        input, // input ( path, type='text' )
+        checkbox, // checkbox( path, trueValue=true, falseValue=false )
+        radio // radio( path, value )
+    } = useModels({
+        username: model('','myCustomValidator')// tell useModels() to use `myCustomValidator` for this field
+    });
+
+    ...
+
+}
 
 ```
 
