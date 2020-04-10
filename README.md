@@ -1,6 +1,6 @@
 # use-models
 
-> advanced form model hooks for your functional react components
+> advanced form model hooks for your functional react components. build huge, complex forms with validation using minimal boilerplate code.
 
 [![NPM](https://img.shields.io/npm/v/use-models.svg)](https://www.npmjs.com/package/use-models) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)
 
@@ -103,7 +103,7 @@ const {
     checkbox, // checkbox( path, trueValue=true, falseValue=false )
     radio // radio( path, value )
 } = useModels({
-    email_address: { value: '', validate:['email'] }
+    email_address: { value: '', validate:['email'] } // equivalent to model('','email');
 });
 ```
 
@@ -177,31 +177,151 @@ function Example() {
 
 ```
 
+you can use as many validator functions as you want. the additional arguments to `model()` will accumulate:
+
+```jsx
+model('','email','myCustomValidator',value=>{}) // equivalent to { value:'', validate:['email','myCustomValidator', value=>{} ] }
+```
+
 3. handling form submit and form submit error
 
 ```jsx
+export default function Example() {
+    const { submit, error } = useModels({
+        foo:''
+    });
+
+    const onSubmit = submit(state=>{
+        //the form has been submitted and there are no errors. the full state object is available here(though it is also returned from `useModels()` as well)
+    });
+
+    const onError = error((errors,state)=>{
+        //the form was submitted, but there is an error. 
+        // NOTE: the arguments to this function may change, but currently the error and state objects are what is received.
+    });
+
+    return <form onSubmit={onSubmit} onError={onError}> ... </form>  
+}
 
 ```
 
 4. displaying form errors by reading `error` object
 
-```jsx
+> The state object is mirrored 1:1 to the errors object. all values in the errors object will be `false`, unless the field has an error.
+> for example, if you have a field called `username`, you can check if there is an error in the field by reading `errors.username`, as shown below:
 
+```jsx
+export default function Example() {
+    const { input, submit, error, state, errors } = useModels({
+        username: model('','not_empty')
+    });
+
+    const onSubmit = submit(()=>{});
+    const onError = error(()=>{});
+
+    return (
+        <form onSubmit={onSubmit} onError={onError}>
+            <label>Choose Username</label>
+            <input {...input('username')} />
+            { errors.username && <p class="input-error">{errors.username}</p> }
+            <button type="submit">Submit</button>
+        </form>
+    )
+}
 ```
 
 5. executing code when the value of a field changes using the `watch()` api
 
 ```jsx
+export default function Example() {
+    const { input, watch } = useModels({
+        username: model('','not_empty')
+    });
 
+    // you can watch a field for changes, very simply
+    // the returned function can be used to deregister the watcher
+    const unwatch = watch('username',(newValue,oldValue)=>{
+        console.log('username changed from %s to %s',oldValue,newValue);
+    });
+
+    return (
+        <form onSubmit={onSubmit} onError={onError}>
+            <label>Choose Username</label>
+            <input {...input('username')} />
+            { errors.username && <p class="input-error">{errors.username}</p> }
+            <button type="submit">Submit</button>
+        </form>
+    )
+}
 ```
 
 6. reading the `state` object
+
+> sometimes you want to read the form state and use it to render some component in your ui with the form state. you can do that with the `state` variable.
+
+```jsx
+export default function Example() {
+    const { input, state } = useModels({
+        age: ''
+    });
+
+    return (
+        <form>
+            <div>
+                <label>Please enter your age:</label>
+                <input {...input('age')} />
+            </div>  
+            <div>
+                <p><strong>You entered: </strong> {state.age} </p>
+                { state.age != '' && state.age < 18 ? <p>You are not old enough to see this content</p>:<p>You are old enough to see this content</p> }
+            </div>
+        </form>
+    );
+}
+```
+
+7. populating the state with data using `hydrate()`
+> you will probably face a situation where you need to load some data, whether from the network or from localstorage or even a cookie. you can do so very easily using `hydrate()`
+> below example shows hydrating state on componentMount, which is probably the most common use case.
+> NOTE: in addition to hydrating the `state`, you can also hydrate the `errors` object if desired, by passing a second argument.
+> NOTE: partial updating is supported, but only for top level keys. no diffing is done at a nested level. this behavior may change in the future.
+```jsx
+import React,{useEffect} from 'react'
+import useModels from 'use-models'
+
+export default function Example() {
+    
+    const { hydrate, state } = useModels({
+        firstname:'',
+        lastname:'',
+        email:''
+    });
+
+    useEffect(()=>{
+        hydrate({
+            firstname:'Garrett',
+            lastname:'Morris',
+            email:'test@test.com'
+        });
+    },[]);
+
+    console.log(state);// on second render you will see state populated with the values passed to hydrate.
+
+    return (
+        ...
+    );
+}
+```
+
+8. advanced topics: directly manipulating `state` and `errors` programatically
+   
+> this feature is experimental, and you are responsible for managing the diffing of your state and error objects. failure to do so will definitely crash your ui
 
 ```jsx
 
 ```
 
-7. populating the state with data using `hydrate()`
+9. kitchen sink example, showing all features
 
 ```jsx
 
