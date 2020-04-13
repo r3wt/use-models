@@ -16,7 +16,7 @@ export default function App() {
     console.log('App.render()');
 
     const { 
-        state, errors, input, checkbox, radio, submit, error, watch, hydrate
+        state, errors, input, checkbox, radio, submit, error, watch, hydrate, set
     } = useModels({
         name: model('',value => {
             if( value.length<5 ){
@@ -26,7 +26,8 @@ export default function App() {
         username: model('','checkUsername'),
         email: model('','email'),
         remember: false,
-        newsletter: 'no'
+        newsletter: 'no',
+        user_type:'user'
     });
 
     //we can hydrate the state(and errors), for example from localstorage or a db call
@@ -61,6 +62,17 @@ export default function App() {
         <div className="example">
             <form onSubmit={onSubmit} onError={onError}>
                 <h3>use-models example</h3>
+                <div className='form-group'>
+                    <label>Select user type:</label>
+                    <div className="user-type-select">
+                        <div className={"user-type-option"+(state.user_type==='user'?' selected':'')} onClick={e=>set('user_type','user')}>
+                            Normal User
+                        </div>
+                        <div className={"user-type-option"+(state.user_type==='admin'?' selected':'')} onClick={e=>set('user_type','admin')}>
+                            Admin User
+                        </div>
+                    </div>    
+                </div>
                 <div className="form-group">
                     <label>Name</label>
                     <input {...input('name')} />
@@ -72,7 +84,7 @@ export default function App() {
                     { errors.username && <p className='help-text'>{errors.username}</p> }
                 </div>
                 <div className="form-group">
-                    <label>email</label>
+                    <label>Email Address:</label>
                     <input {...input('email','email')} />
                     { errors.email && <p className='help-text'>{errors.email}</p> }
                 </div>

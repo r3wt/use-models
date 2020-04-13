@@ -114,12 +114,6 @@ function stringifyErr( err ) {
     return err.toString();//last resort
 }
 
-// const customInputMethods = {};
-
-// function createCustomInput( name, interface ) {
-//     customInputMethods[name]=interface;
-// }
-
 export default function useModels(options={}) {
 
     const {defaultState,errorState,validationPaths} = parseOptions(options);

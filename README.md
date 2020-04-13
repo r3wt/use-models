@@ -226,7 +226,7 @@ export default function Example() {
         <form onSubmit={onSubmit} onError={onError}>
             <label>Choose Username</label>
             <input {...input('username')} />
-            { errors.username && <p class="input-error">{errors.username}</p> }
+            { errors.username && <p className="input-error">{errors.username}</p> }
             <button type="submit">Submit</button>
         </form>
     )
@@ -251,7 +251,7 @@ export default function Example() {
         <form onSubmit={onSubmit} onError={onError}>
             <label>Choose Username</label>
             <input {...input('username')} />
-            { errors.username && <p class="input-error">{errors.username}</p> }
+            { errors.username && <p className="input-error">{errors.username}</p> }
             <button type="submit">Submit</button>
         </form>
     )
@@ -316,18 +316,74 @@ export default function Example() {
 }
 ```
 
-8. advanced topics: directly manipulating `state` and `errors` programatically
+8. using `get()` and `set()` for custom input methods or for other state features, like a loading indicator
+
+```jsx
+
+import React from 'react'
+import useModels from 'use-models'
+
+function registerUser( name ) {
+    ...
+}
+
+export default function Example() {
+
+    const { state, input, get, set, submit } = useModels({
+        loading: false,
+        name:'',
+        user_type:'user',
+        submit_error:null
+    });
+
+    const onSubmit = submit(()=>{
+        set('loading',true);
+        registerUser(state.name).then(()=>{
+            set('loading',false);
+            set('submit_error',null);
+        })
+        .catch(err=>{
+            console.log('err',err);
+            set('loading',false);
+            set('submit_error',err.message);
+        })
+    })
+
+    return (
+        state.loading ? <div>'Loading...'</div> : (
+            <form onSubmit={onSubmit}>
+                { state.submit_error && <p className="alert">Form Error: {state.submit_error} </p> }
+                <h1>Register Account</h1>
+                <div className="form-group">
+                    <label>Your Name</label>
+                    <input {...input('name')} />
+                </div>
+                <div className="user-type-select">
+                    <div className={"user-type-option"+(state.user_type==='user'?' selected':'')} onClick={e=>set('user_type','user')}>
+                        Normal User
+                    </div>
+                    <div className={"user-type-option"+(state.user_type==='admin'?' selected':'')} onClick={e=>set('user_type','admin')}>
+                        Admin User
+                    </div>
+                </div>
+                <button type="submit">Create User</button>
+            </form>
+
+        )
+    )
+
+```
+
+
+9. advanced topics: directly manipulating `state` and `errors` programatically
    
 > this feature is experimental, and you are responsible for managing the diffing of your state and error objects. failure to do so will definitely crash your ui
 
 ```jsx
-
-```
-
-9. kitchen sink example, showing all features
-
-```jsx
-
+// you do this at your own risk!
+const state = {...getState()};
+state.foo=1;
+setState(state);
 ```
 
 ## API
@@ -363,6 +419,7 @@ export default function Example() {
 - `radio( String name, Any value=null )` - for use with radio components, whether native or custom. value is the value to assign to the state if the radio is checked. returns `props` for use on inputs.
    - `name` - see description under `input`
    - `value` - the value of the field if the checkbox is checked. 
+- `get( String name )` - can be used to read the value of a given model.
 - `set( String name, Any value, Boolean validate=true, Boolean watchers=true )` - can be used to directly manipulate a given model.
    - `name` - the path of the model to update. nesting is supported.
    - `value` - the value to set for the model.

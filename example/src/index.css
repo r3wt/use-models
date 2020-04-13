@@ -8,6 +8,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+*,
+*:before,
+*:after {
+    box-sizing: border-box;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -49,7 +55,7 @@ pre {
     border: 1px solid #ddd;
 }
 .form-group.with-nested > label {
-    margin-bottom: 15px;
+    margin-bottom: 5px;
 }
 
 .form-group .help-text {
@@ -77,4 +83,23 @@ button {
 }
 .result-50 {
     margin-bottom: 15px;
+}
+
+.user-type-select {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+.user-type-option {
+    width: 48%;
+    text-align: center;
+    border:  2px solid #ddd;
+    padding:  4px 12px;
+    font-size: 18px;
+    border-radius: 4px;
+    user-select: none;
+    cursor: pointer;
+}
+.user-type-option.selected {
+    border-color: #005CC8;
 }
