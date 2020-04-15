@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import validators from './lib/validators';
 
 function extendValidators( name, fn ) {
@@ -93,6 +93,7 @@ function assignValues( optPointer, statePointer, errorPointer ) {
 } 
 
 function parseOptions ( opts ) {
+    console.log('parseOptions()');
     const defaultState = {};
     const errorOptions = {};
     assignValues(opts,defaultState,errorOptions);//this recursive function will populate defaultState and errorOptions for us.
@@ -115,6 +116,8 @@ function stringifyErr( err ) {
 }
 
 export default function useModels(options={}) {
+
+    console.log('useModels()');
 
     const {defaultState,errorState,validationPaths} = parseOptions(options);
     const watchPaths={};

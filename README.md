@@ -380,10 +380,16 @@ export default function Example() {
 > this feature is experimental, and you are responsible for managing the diffing of your state and error objects. failure to do so will definitely crash your ui
 
 ```jsx
+
+const { getState, setState, getErrors, setErrors } = useModels({});
+
 // you do this at your own risk!
 const state = {...getState()};
 state.foo=1;
 setState(state);
+
+const errors = {...getErrors()};
+setErrors(errors);
 ```
 
 ## API
@@ -400,6 +406,12 @@ setState(state);
 
 **returns**
 - An object with helper functions `{ input, checkbox, radio, submit, error, getState, getErrors, setState, setErrors, errors, state, watch, hydrate }`
+
+#### other exports: 
+
+`model( String name, Array<Function|String> ...validate )` - a helper for use in defining options for fields on `useModels`. returns an object with shape `{ value, validate:[] }`
+
+`extendValidators( String name, Function validator )` - adds a named validator to the built in validators, for purpose of reusing throughout your project.
 
 #### helpers (returned from `useModels()`):
 
