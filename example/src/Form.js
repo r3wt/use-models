@@ -1,13 +1,3 @@
-import React from 'react';
-import Form from './Form';
-
-import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter';
-import jsx from 'react-syntax-highlighter/dist/esm/languages/prism/jsx';
-import prism from 'react-syntax-highlighter/dist/esm/styles/prism/prism';
- 
-SyntaxHighlighter.registerLanguage('jsx', jsx);
-
-const codeString = `
 import React, { useEffect } from 'react'
 
 import useModels,{ model, extendValidators } from 'use-models';
@@ -104,13 +94,13 @@ export default function Form() {
                 <div className="results">
                     <div className="result-50">
                         <strong>State:</strong>
-                        <pre>
+                        <pre className="debug">
                             {JSON.stringify(state,null,2)}
                         </pre>
                     </div>
                     <div className="result-50">
                         <strong>Errors:</strong>
-                        <pre>
+                        <pre className="debug">
                             {JSON.stringify(errors,null,2)}
                         </pre>
                     </div> 
@@ -120,40 +110,5 @@ export default function Form() {
               
         </div>
     );
-    
-};
-`;
-
-export default function App() {
-
-    return (
-        <div className="gh-example">
-            <div class="gh-100 title">
-                <div className="left">
-                    <h1>Use-models</h1> 
-                    <p>advanced form model hooks for your functional react components</p>
-                </div>
-                <div className="right">
-                    <a href="https://www.npmjs.com/package/use-models">[NPM]</a>
-                    <a href="https://github.com/r3wt/use-models">[Github]</a>    
-                </div>
-            </div>
-            <div class="gh-50">
-                <h1>Code:</h1>
-                <div className="box-1">
-                    <SyntaxHighlighter language="jsx" style={prism} customStyle={{fontSize:'14px',lineHeight:'18px'}}>
-                        {codeString}
-                    </SyntaxHighlighter>    
-                </div>
-                
-            </div>
-            <div class="gh-50">
-                <h1>Output:</h1>
-                <div class="box-2">
-                    <Form /> 
-                </div>   
-            </div>
-        </div>
-    )
     
 };

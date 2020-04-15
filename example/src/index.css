@@ -14,25 +14,90 @@ body {
     box-sizing: border-box;
 }
 
+
+.title {
+    display: flex;
+    margin: 0 auto;
+    padding: 5px 10%;
+    height: 64px;
+}
+.title .right {
+    padding-left: 25px;
+    display: flex;
+    align-items: center;
+}
+
+.title h1 {
+    margin: 0;
+    font-size: 24px;
+}
+.title p {
+    margin: 0;
+}
+.title a {
+    color: blue;
+    text-decoration: none;
+    margin: 0 2px;
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
-pre {
+pre.debug {
     background: #222;
     color: #ccc;
     padding: 15px;
     border-radius: 4px;
 }
 
-.example {
+.gh-example {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.gh-100 {
+    width: 100%;
+}
+
+.gh-50 {
+    width: 50%;
+    height: calc(100vh-64px);
+    padding: 25px;
+}
+
+.gh-50 > h1 {
+    text-align: center;
+    margin: 0 0 15px;
+    font-size: 20px;
+}
+
+.gh-50 > .box-1 {
+    width: 80%;
+    margin: 0 auto;
+}
+
+.gh-50 > .box-1 > pre {
+    height: 80vh;
+    overflow: auto;
+}
+
+.gh-50 > .box-2 {
+    height: 80vh;
+    overflow-y: scroll;
+    width: 80%;
+    margin: 0 auto;
+    background: rgb(245, 242, 240);
+}
+
+.form {
     display:flex;
     align-items: center;
     justify-content: center;
     height: 100vh;
 }
-.example form {
+.form form {
     width: 400px;
     max-width:100%;
     margin: 25px auto;
@@ -99,6 +164,7 @@ button {
     border-radius: 4px;
     user-select: none;
     cursor: pointer;
+    background: #fff;
 }
 .user-type-option.selected {
     border-color: #005CC8;
