@@ -206,7 +206,7 @@ export default function useModels<T = any>(options: Options = {}) {
 
     function input(name: string, type: string = "text") {
         return {
-            onChange: (e: Event) => {
+            onChange: (e: React.ChangeEvent<HTMLInputElement|HTMLTextAreaElement|any>|React.SyntheticEvent<EventTarget>|Event|any) => {
 
                 var value = e;//components like react-select-me pass primitive values
                 if (has(e, 'value')) {
@@ -233,7 +233,7 @@ export default function useModels<T = any>(options: Options = {}) {
     function checkbox(name: string, truevalue: any = true, falsevalue: any = false) {
 
         return {
-            onChange: (e: Event) => {
+            onChange: (e: React.ChangeEvent<HTMLInputElement>|React.SyntheticEvent<EventTarget>|Event|any) => {
                 const newValue = (e as any).target.checked ? truevalue : falsevalue;
                 const oldValue = getValue(name);
                 setState(getUpdate(name, newValue));
@@ -252,7 +252,7 @@ export default function useModels<T = any>(options: Options = {}) {
     function radio(name: string, value: any = null) {
 
         return {
-            onChange: (e: Event) => {
+            onChange: (e: React.ChangeEvent<HTMLInputElement>|React.SyntheticEvent<EventTarget>|Event|any) => {
                 if ((e as any).target.checked) {
                     const newValue = value;
                     const oldValue = getValue(name);
@@ -271,8 +271,7 @@ export default function useModels<T = any>(options: Options = {}) {
     };
 
     function submit(cb: (state: any) => any | void) {
-        return async (e: Event) => {
-
+        return async (e: React.FormEvent<EventTarget>|React.SyntheticEvent<EventTarget>|Event|any) => {
             e.preventDefault();
             const errs = await validate();
 
