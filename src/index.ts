@@ -188,7 +188,7 @@ export default function useModels<T = any>(options: Options = {}) {
         for (let i = 0; i < path.length; i++) {
             value = value[path[i]];
         }
-        return value;
+        return (value as unknown) as string;
     }
 
     function getUpdate<T2 = T>(name: string, value: any, __state: any = state) {
