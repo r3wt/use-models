@@ -10,6 +10,9 @@
 npm install --save use-models
 ```
 
+## Typescript
+- First class typescript support, definitions are shipped in bundle. 
+
 ## Features
 
 - form helpers `input`, `checkbox`, and `radio` which wire up your form elements to state with path syntax, eg `book.author.firstname`. nesting supported for objects(and possibly arrays)
