@@ -1,5 +1,5 @@
-const { build } = require('esbuild')
-const pkg = require('./package.json')
+const { build } = require('esbuild');
+const pkg = require('./package.json');
 
 // build esnext
 build({
@@ -14,11 +14,11 @@ build({
   external: ['react', 'react-dom']
 })
 .then(() => {
-  console.log('build succeeded')
+  console.log('build succeeded');
 })
 .catch((err) => {
-  console.warn('build failed', err)
-  process.exit(1)
+  console.warn('build failed', err);
+  process.exit(1);
 });
 
 // build commonjs
@@ -34,9 +34,9 @@ build({
   external: ['react', 'react-dom']
 })
 .then(() => {
-  console.log('build succeeded')
+  console.log('build succeeded');
 })
 .catch((err) => {
-  console.warn('build failed', err)
+  console.warn('build failed', err);
   process.exit(1)
 });
