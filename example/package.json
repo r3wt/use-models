@@ -7,7 +7,7 @@
     "react": "file:../node_modules/react",
     "react-dom": "file:../node_modules/react-dom",
     "react-scripts": "file:../node_modules/react-scripts",
-    "react-syntax-highlighter": "^12.2.1",
+    "react-syntax-highlighter": "file:../node_modules/react-syntax-highlighter",
     "use-models": "file:.."
   },
   "scripts": {

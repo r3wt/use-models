@@ -2,11 +2,9 @@ import React, { useEffect } from 'react'
 
 import useModels,{ model, extendValidators } from 'use-models';
 
-extendValidators('checkUsername',function ( value ) {
-    return new Promise((resolve,reject)=>{
-        setTimeout(()=>{
-            reject(new Error('That username is taken'));
-        },200);
+extendValidators('checkUsername',async ( value ) => {
+    return await new Promise((resolve,reject)=>{
+        setTimeout(()=>reject(new Error('That username is taken')),200)
     });
 });
 
