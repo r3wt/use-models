@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react';
 import validators from './lib/validators';
 
-export type ValidatorFunctionReturnTypes = void | never | undefined | string | ErrorLikeObject;
+export type ValidatorFunctionReturnTypes = void | null | false | undefined | string | Error | ErrorLikeObject;
 export type ValidatorFunction = (val: any) => ValidatorFunctionReturnTypes | Promise<ValidatorFunctionReturnTypes>;
 
 function extendValidators(name: string, fn: ValidatorFunction) {

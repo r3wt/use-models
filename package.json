@@ -19,7 +19,8 @@
     "build:code": "node build",
     "build": "run-s build:types build:code",
     "start": "run-s build example",
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
+    "test": "cross-env CI=1 react-scripts test --env=jest-environment-jsdom-sixteen",
+    "test:coverage":"npm test -- --coverage --watchAll=false",
     "test:build": "run-s build",
     "example": "cd example && npm start",
     "predeploy": "cd example && npm install && npm run build",
@@ -57,5 +58,18 @@
   "files": [
     "dist"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "jest":{
+    "coverageThreshold":{
+      "global":{
+        "functions": 90,
+        "lines": 90,
+        "statements": 90,
+        "branches": 80
+      }
+    },
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}"
+    ]
+  }
 }

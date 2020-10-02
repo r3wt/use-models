@@ -24,18 +24,5 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ],
-  "jest":{
-    "coverageThreshold":{
-      "global":{
-        "functions": 90,
-        "lines": 90,
-        "statements": 90,
-        "branches": 80
-      }
-    },
-    "collectCoverageFrom": [
-      "**/*.{ts,tsx}"
-    ]
-  }
+  ]
 }

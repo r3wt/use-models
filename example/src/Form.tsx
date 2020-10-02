@@ -30,7 +30,7 @@ export default function Form() {
     hydrate,
     set
   } = useModels<FormState>({
-    name: model('', (value:string) => {
+    name: model('', (value:string):void|string => {
       if (value.length < 5) {
         return 'Name must be at least 5 characters'
       }
@@ -92,8 +92,8 @@ export default function Form() {
           </div>
         </div>
         <div className='form-group'>
-          <label>Name</label>
-          <input {...input('name')} />
+          <label htmlFor='name'>Name</label>
+          <input id='name' {...input('name')} />
           {errors.name && <p className='help-text'>{errors.name}</p>}
         </div>
         <div className='form-group'>
