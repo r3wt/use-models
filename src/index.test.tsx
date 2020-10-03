@@ -4,12 +4,11 @@ import userEvent from '@testing-library/user-event';
 import useModels, { model, extendValidators } from './index';
 
 extendValidators('checkUsername', async (_value:string) => {
-  return await new Promise((_resolve, reject) => {
-    setTimeout(() => reject(new Error('That username is taken')), 200)
-  })
+  return await Promise.reject('That username is taken');
 });
 
-export type FormState = {
+type FormState = {
+  submit_error: string;
   name: string;
   username: string;
   email: string;
@@ -152,14 +151,11 @@ describe('use-models',()=>{
   it('renders Form component and manipulates the form like a user would',async()=>{
 
     const {unmount,getByLabelText,getByText} = render(<Form />);
-    await new Promise((resolve)=>setTimeout(resolve,500));
 
     // name
     const name = await waitFor(()=>getByLabelText('Name'));
     expect(name).toBeInTheDocument();
-    await userEvent.type(name,'Mr');
-
-    await userEvent.type(name,' Obvious');
+    await userEvent.type(name,'Mr Obvious');
 
     // username
     const user = await waitFor(()=>getByLabelText('Desired Username'));
@@ -169,20 +165,13 @@ describe('use-models',()=>{
     // email
     const email = await waitFor(()=>getByLabelText('Email Address'));
     expect(email).toBeInTheDocument();
-    await userEvent.type(email,'abc');
-
-    await userEvent.type(email,'123@hotmail.com');
-
+    await userEvent.type(email,'abc123@hotmail.com');
     const usertype = await waitFor(()=>getByLabelText('admin-user'));
-    console.log(usertype);
     expect(usertype).toBeInTheDocument();
     fireEvent.click(usertype);
-
     const submit = await waitFor(()=>getByText(/Submit/,{selector:'button'}));
     expect(submit).toBeInTheDocument();
     fireEvent.click(submit);
-    await new Promise((resolve)=>setTimeout(resolve,200));
-
     unmount();
   });
 
