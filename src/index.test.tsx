@@ -15,8 +15,10 @@ export type FormState = {
   email: string;
   remember: boolean;
   newsletter: string;
-  user_type: string;
-}
+  config: {
+    user_type: string;
+  };
+};
 
 export default function Form() {
   const {
@@ -33,15 +35,21 @@ export default function Form() {
   } = useModels<FormState>({
     name: model('', (value:string):void|string => {
       if (value.length < 5) {
-        return 'Name must be at least 5 characters'
+        return 'Name must be at least 5 characters';
       }
     }),
     username: model('', 'checkUsername'),
     email: model('', 'email'),
     remember: false,
     newsletter: 'no',
-    user_type: 'user'
-  })
+    config: {
+      user_type:  model('user', (value:string):void|string => {
+        if(['user','admin'].indexOf(value) === -1) {
+          return 'invalid user type';
+        }
+      })
+    }
+  });
 
   //we can hydrate the state(and errors), for example from localstorage or a db call
   useEffect(() => {
@@ -50,21 +58,21 @@ export default function Form() {
       email: 'test@test.com',
       newsletter: 'yes'
     })
-  }, [hydrate])
+  }, [hydrate]);
 
   const onSubmit = submit((state) => {
     //do something with your form data
     console.log(state)
-  })
+  });
 
   const onError = error((errors, state) => {
     //do something on form submit error
     console.log(errors,state);
-  })
+  });
 
   watch('username', (value, previousValue) => {
     console.log('username changed from %s to %s', previousValue, value)
-  }) // returns a function that unregisters the watcher.
+  }); // returns a function that unregisters the watcher.
 
   return (
     <div className='form'>
@@ -73,20 +81,22 @@ export default function Form() {
           <label>Select user type:</label>
           <div className='user-type-select'>
             <div
+              aria-label='normal-user'
               className={
                 'user-type-option' +
-                (state.user_type === 'user' ? ' selected' : '')
+                (state.config.user_type === 'user' ? ' selected' : '')
               }
-              onClick={(_e:React.MouseEvent<HTMLDivElement>) => set('user_type', 'user')}
+              onClick={(_e:React.MouseEvent<HTMLDivElement>) => set('config.user_type', 'user')}
             >
               Normal User
             </div>
             <div
+              aria-label='admin-user'
               className={
                 'user-type-option' +
-                (state.user_type === 'admin' ? ' selected' : '')
+                (state.config.user_type === 'admin' ? ' selected' : '')
               }
-              onClick={(_e:React.MouseEvent<HTMLDivElement>) => set('user_type', 'admin')}
+              onClick={(_e:React.MouseEvent<HTMLDivElement>) => set('config.user_type', 'admin')}
             >
               Admin User
             </div>
@@ -133,20 +143,23 @@ export default function Form() {
         </div>
       </form>
     </div>
-  )
+  );
 };
 
 
 describe('use-models',()=>{
   
   it('renders Form component and manipulates the form like a user would',async()=>{
-    const {unmount,getByLabelText} = render(<Form />);
-    // await new Promise((resolve)=>setTimeout(resolve,500));
+
+    const {unmount,getByLabelText,getByText} = render(<Form />);
+    await new Promise((resolve)=>setTimeout(resolve,500));
 
     // name
     const name = await waitFor(()=>getByLabelText('Name'));
     expect(name).toBeInTheDocument();
-    await userEvent.type(name,'Mr Obvious');
+    await userEvent.type(name,'Mr');
+
+    await userEvent.type(name,' Obvious');
 
     // username
     const user = await waitFor(()=>getByLabelText('Desired Username'));
@@ -157,9 +170,18 @@ describe('use-models',()=>{
     const email = await waitFor(()=>getByLabelText('Email Address'));
     expect(email).toBeInTheDocument();
     await userEvent.type(email,'abc');
-    // give long enough for error to display
-    await new Promise((resolve)=>setTimeout(resolve,200));
+
     await userEvent.type(email,'123@hotmail.com');
+
+    const usertype = await waitFor(()=>getByLabelText('admin-user'));
+    console.log(usertype);
+    expect(usertype).toBeInTheDocument();
+    fireEvent.click(usertype);
+
+    const submit = await waitFor(()=>getByText(/Submit/,{selector:'button'}));
+    expect(submit).toBeInTheDocument();
+    fireEvent.click(submit);
+    await new Promise((resolve)=>setTimeout(resolve,200));
 
     unmount();
   });

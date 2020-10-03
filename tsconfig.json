@@ -10,7 +10,6 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "esModuleInterop": true,
-    "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
     "strictNullChecks": true,
