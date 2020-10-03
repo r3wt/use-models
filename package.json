@@ -15,7 +15,7 @@
     "node": ">=10"
   },
   "scripts": {
-    "build:types": "npx tsc -d --emitDeclarationOnly --declarationDir ./dist",
+    "build:types": "npx tsc -d --project tsconfig.build.json --emitDeclarationOnly --declarationDir ./dist",
     "build:code": "node build",
     "build": "run-s build:types build:code",
     "start": "run-s build example",
@@ -41,11 +41,13 @@
     "@types/node": "^14.11.2",
     "@types/react": "^16.9.50",
     "@types/react-dom": "^16.9.8",
+    "@types/react-syntax-highlighter": "^11.0.5",
     "cross-env": "^7.0.2",
     "esbuild": "^0.7.8",
     "gh-pages": "^2.2.0",
     "globalthis": "^1.0.1",
     "jest-environment-jsdom-sixteen": "^1.0.3",
+    "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "react": "^16.13.1",

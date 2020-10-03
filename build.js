@@ -6,7 +6,7 @@ build({
   entryPoints: [pkg.source],
   format: 'esm',
   outfile: pkg.module,
-  tsconfig: './tsconfig.json',
+  tsconfig: './tsconfig.build.json',
   minify: true,
   bundle: true,
   logLevel: 'info',
