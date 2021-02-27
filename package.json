@@ -15,12 +15,13 @@
     "node": ">=10"
   },
   "scripts": {
-    "build:types": "npx tsc -d --emitDeclarationOnly --declarationDir ./dist",
+    "build:types": "npx tsc -d --project tsconfig.build.json --emitDeclarationOnly --declarationDir ./dist",
     "build:code": "node build",
     "build": "run-s build:types build:code",
     "start": "run-s build example",
-    "test": "cross-env CI=1 react-scripts test --env=jsdom",
-    "test:build": "run-s build",
+    "test": "cross-env CI=1 react-scripts test --ci --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
+    "test:coverage": "npm test -- --coverage  --watchAll=false --silent",
+    "test:watch": "npm test -- --watchAll=true",
     "example": "cd example && npm start",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build"
@@ -32,30 +33,47 @@
     "@types/react-dom": "^16.9.8"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^5.11.1",
-    "@testing-library/react": "^10.4.7",
-    "@testing-library/user-event": "^12.0.15",
-    "@types/jest": "^26.0.7",
+    "@testing-library/dom": "^7.24.3",
+    "@testing-library/jest-dom": "^5.11.4",
+    "@testing-library/react": "^11.0.4",
+    "@testing-library/user-event": "^12.1.6",
+    "@types/jest": "^26.0.14",
+    "@types/node": "^14.11.2",
+    "@types/react": "^16.9.50",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-syntax-highlighter": "^11.0.5",
     "cross-env": "^7.0.2",
-    "esbuild": "^0.7.5",
+    "esbuild": "^0.7.8",
     "gh-pages": "^2.2.0",
     "globalthis": "^1.0.1",
+    "hyperform": "^0.12.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
+    "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.1",
+    "react-scripts": "^4.0.3",
+    "react-syntax-highlighter": "^12.2.1",
     "tslib": "^2.0.1",
     "tslint": "^6.1.3",
-    "typescript": "^4.0.3",
-    "@types/node": "^14.0.26",
-    "@types/react": "^16.9.27",
-    "@types/react-dom": "^16.9.8",
-    "react-syntax-highlighter": "^12.2.1"
+    "typescript": "^4.0.3"
   },
   "files": [
     "dist"
   ],
-  "dependencies": {}
+  "dependencies": {},
+  "jest": {
+    "coverageThreshold": {
+      "global": {
+        "functions": 80,
+        "lines": 80,
+        "statements": 80,
+        "branches": 75
+      }
+    },
+    "collectCoverageFrom": [
+      "**/*.{ts,tsx}"
+    ]
+  }
 }

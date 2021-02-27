@@ -1,7 +1,8 @@
 import { useState, useCallback } from 'react';
 import validators from './lib/validators';
 
-export type ValidatorFunction = (val: any) => void | string | ErrorLikeObject | Promise<void | string | ErrorLikeObject>;
+export type ValidatorFunctionReturnTypes = void | null | false | undefined | string | Error | ErrorLikeObject;
+export type ValidatorFunction = (val: any) => ValidatorFunctionReturnTypes | Promise<ValidatorFunctionReturnTypes>;
 
 function extendValidators(name: string, fn: ValidatorFunction) {
   validators[name] = fn;
@@ -34,11 +35,11 @@ const flatten = (object: any) => {
 
 const getValidationPaths = (options: ParseOptions) => {
   const paths = flatten(options);
-  for (let k in paths) {
-    if (!Array.isArray(paths[k])) {
-      paths[k] = [paths[k]];
-    }
-  }
+  // for (let k in paths) {
+  //   if (!Array.isArray(paths[k])) {
+  //     paths[k] = [paths[k]];
+  //   }
+  // }
 
   return paths;
 }
@@ -311,13 +312,14 @@ export default function useModels<T = any>(options: Options = {}) {
     }
   }
 
-  function set(name: string, value: any, validate = true, watchers = true) {
+  function set(name: string, value: any, runValidators = true, runWatchers = true) {
     const oldValue = getValue(name);
     setState(getUpdate(name, value));
-    if (watchers && watchPaths[name]) {
+    if (runWatchers && watchPaths[name]) {
       watchPaths[name](value, oldValue);
     }
-    if (validate) {
+    if (runValidators
+) {
       validatePath(name, value);
     }
   }

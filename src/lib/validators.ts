@@ -9,12 +9,7 @@ const validators = {
     input.value = value;
     let result = input.checkValidity();
     const parts = value.split('@');
-    if (parts[1] && parts[1].indexOf('.') <= 0) {
-      result = false;
-    } else {
-      return 'Email Address can\'t be blank';
-    }
-    if (!result) {
+    if (!result || parts[1].indexOf('.') <= 0) {
       return 'Invalid Email Address';
     }
   },

@@ -2,11 +2,20 @@ import React, { useEffect } from 'react'
 
 import useModels, { model, extendValidators } from 'use-models'
 
-extendValidators('checkUsername', async (value) => {
-  return await new Promise((resolve, reject) => {
+extendValidators('checkUsername', async (_value:string) => {
+  return await new Promise((_resolve, reject) => {
     setTimeout(() => reject(new Error('That username is taken')), 200)
   })
-})
+});
+
+export type FormState = {
+  name: string;
+  username: string;
+  email: string;
+  remember: boolean;
+  newsletter: string;
+  user_type: string;
+}
 
 export default function Form() {
   const {
@@ -20,8 +29,8 @@ export default function Form() {
     watch,
     hydrate,
     set
-  } = useModels({
-    name: model('', (value) => {
+  } = useModels<FormState>({
+    name: model('', (value:string):void|string => {
       if (value.length < 5) {
         return 'Name must be at least 5 characters'
       }
@@ -49,6 +58,7 @@ export default function Form() {
 
   const onError = error((errors, state) => {
     //do something on form submit error
+    console.log(errors,state);
   })
 
   watch('username', (value, previousValue) => {
@@ -66,7 +76,7 @@ export default function Form() {
                 'user-type-option' +
                 (state.user_type === 'user' ? ' selected' : '')
               }
-              onClick={(e) => set('user_type', 'user')}
+              onClick={(_e:React.MouseEvent<HTMLDivElement>) => set('user_type', 'user')}
             >
               Normal User
             </div>
@@ -75,15 +85,15 @@ export default function Form() {
                 'user-type-option' +
                 (state.user_type === 'admin' ? ' selected' : '')
               }
-              onClick={(e) => set('user_type', 'admin')}
+              onClick={(_e:React.MouseEvent<HTMLDivElement>) => set('user_type', 'admin')}
             >
               Admin User
             </div>
           </div>
         </div>
         <div className='form-group'>
-          <label>Name</label>
-          <input {...input('name')} />
+          <label htmlFor='name'>Name</label>
+          <input id='name' {...input('name')} />
           {errors.name && <p className='help-text'>{errors.name}</p>}
         </div>
         <div className='form-group'>

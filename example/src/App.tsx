@@ -139,7 +139,7 @@ export default function Form() {
 export default function App() {
   return (
     <div className='gh-example'>
-      <div class='gh-100 title'>
+      <div className='gh-100 title'>
         <div className='left'>
           <h1>Use-models</h1>
           <p>advanced form model hooks for your functional react components</p>
@@ -149,7 +149,7 @@ export default function App() {
           <a href='https://github.com/r3wt/use-models'>[Github]</a>
         </div>
       </div>
-      <div class='gh-50'>
+      <div className='gh-50'>
         <h1>Code:</h1>
         <div className='box-1'>
           <SyntaxHighlighter
@@ -161,9 +161,9 @@ export default function App() {
           </SyntaxHighlighter>
         </div>
       </div>
-      <div class='gh-50'>
+      <div className='gh-50'>
         <h1>Output:</h1>
-        <div class='box-2'>
+        <div className='box-2'>
           <Form />
         </div>
       </div>

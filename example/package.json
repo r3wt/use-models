@@ -8,7 +8,12 @@
     "react-dom": "file:../node_modules/react-dom",
     "react-scripts": "file:../node_modules/react-scripts",
     "react-syntax-highlighter": "file:../node_modules/react-syntax-highlighter",
-    "use-models": "file:.."
+    "use-models": "file:..",
+    "node-sass": "file:../node_modules/node-sass",
+    "@types/node": "file:../node_modules/@types/node",
+    "@types/react": "file:../node_modules/@types/react",
+    "@types/react-dom": "file:../node_modules/@types/react-dom",
+    "@types/react-syntax-highlighter": "file:../node_modules/@types/react-syntax-highlighter"
   },
   "scripts": {
     "start": "node ../node_modules/react-scripts/bin/react-scripts.js start",
