@@ -17,9 +17,10 @@ type FormState = {
   config: {
     user_type: string;
   };
+  non_existent: string;
 };
 
-export default function Form() {
+function Form() {
   const {
     state,
     errors,
@@ -40,6 +41,7 @@ export default function Form() {
     username: model('', 'checkUsername'),
     email: model('', 'email'),
     remember: false,
+    non_existent: model('','nonExistentValidator'),//testing a validator which does not exist to hit that codepath
     newsletter: 'no',
     config: {
       user_type:  model('user', (value:string):void|string => {
@@ -54,9 +56,9 @@ export default function Form() {
   useEffect(() => {
     hydrate({
       name: 'Garrett',
-      email: 'test@test.com',
+      email: 'test@test',
       newsletter: 'yes'
-    })
+    });
   }, [hydrate]);
 
   const onSubmit = submit((state) => {
@@ -69,7 +71,7 @@ export default function Form() {
     console.log(errors,state);
   });
 
-  watch('username', (value, previousValue) => {
+  const unwatch = watch('username', (value, previousValue) => {
     console.log('username changed from %s to %s', previousValue, value)
   }); // returns a function that unregisters the watcher.
 
@@ -133,18 +135,79 @@ export default function Form() {
         <div className='results'>
           <div className='result-50'>
             <strong>State:</strong>
-            <pre className='debug'>{JSON.stringify(state, null, 2)}</pre>
+            <pre className='debug'>{stringify(state)}</pre>
           </div>
           <div className='result-50'>
             <strong>Errors:</strong>
-            <pre className='debug'>{JSON.stringify(errors, null, 2)}</pre>
+            <pre className='debug'>{stringify(errors)}</pre>
           </div>
         </div>
+        <div className='form-group'>
+          <label htmlFor='NonExistent'>Non Existent</label>
+          <input id='NonExistent' {...input('non_existent')} />
+          {errors.name && <p className='help-text'>{errors.non_existent}</p>}
+        </div>
+        <button type="button" onClick={unwatch}>Unwatch username</button>
       </form>
     </div>
   );
 };
 
+
+function stringify(v:any) {
+  return JSON.stringify(v, null, 2);
+}
+
+function ExtendedTests1() {
+
+  const {
+    hydrate,
+    getErrors,
+    getState,
+    get,
+    set,
+    watch
+  } = useModels<{email:string}>({
+    email: model('', 'email'),
+  });
+
+  function getEmailValue() {
+    return get('email');
+  }
+
+  watch('email',(value:string,previousValue:string)=>{
+    console.log('value %s, previous value %s',value,previousValue);
+  });
+
+  function setEmailValue() {
+    set('email','test@test.com');
+  }
+
+  //we can hydrate the state(and errors), for example from localstorage or a db call
+  useEffect(() => {
+    hydrate({
+      email: 'test@test'
+    },{
+      email: 'Invalid Email Address'
+    });
+  }, [hydrate]);
+
+  return (
+    <div className='results'>
+      <div className='result-50'>
+        <strong>State:</strong>
+        <pre className='debug' data-testid="state">{stringify(getState())}</pre>
+      </div>
+      <div className='result-50'>
+        <strong>Errors:</strong>
+        <pre className='debug' data-testid="errors">{stringify(getErrors())}</pre>
+      </div>
+      <button type="button" onClick={getEmailValue}>Get Email Value</button>
+      <button type="button" onClick={setEmailValue}>Set Email Value</button>
+    </div>
+  );
+
+}
 
 describe('use-models',()=>{
   
@@ -172,6 +235,38 @@ describe('use-models',()=>{
     const submit = await waitFor(()=>getByText(/Submit/,{selector:'button'}));
     expect(submit).toBeInTheDocument();
     fireEvent.click(submit);
+
+    // unwatch the username
+    const unwatch = await waitFor(()=>getByText('Unwatch username'));
+    expect(unwatch).toBeInTheDocument();
+    fireEvent.click(unwatch);
+
+    unmount();
+  });
+
+  it('tests getState(), getErrors() and error hydration in hydrate()',async()=>{
+    const {unmount,getByText} = render(<ExtendedTests1 />);
+    await new Promise((resolve)=>setTimeout(resolve,100));// give time for first render so we are hydrated. 
+    const errors = await waitFor(()=>getByText(/test@test/));
+    const state = await waitFor(()=>getByText(/Invalid Email Address/));
+    expect(errors).toBeInTheDocument();
+    expect(state).toBeInTheDocument();
+    await new Promise((resolve)=>setTimeout(resolve,100));
+    unmount();
+  });
+
+  it('tests set() and get()',async()=>{
+    const {unmount,getByText} = render(<ExtendedTests1 />);
+    await new Promise((resolve)=>setTimeout(resolve,100));// give time for first render so we are hydrated. 
+    
+    const getB = await waitFor(()=>getByText(/Get Email Value/,{selector:'button'}));
+    expect(getB).toBeInTheDocument();
+    fireEvent.click(getB);
+
+    const setB = await waitFor(()=>getByText(/Set Email Value/,{selector:'button'}));
+    expect(setB).toBeInTheDocument();
+    fireEvent.click(setB);
+    await new Promise((resolve)=>setTimeout(resolve,100));
     unmount();
   });
 

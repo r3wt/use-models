@@ -19,8 +19,8 @@
     "build:code": "node build",
     "build": "run-s build:types build:code",
     "start": "run-s build example",
-    "test": "cross-env CI=1 react-scripts test --env=jest-environment-jsdom-sixteen",
-    "test:coverage": "npm test -- --coverage  --watchAll=false",
+    "test": "cross-env CI=1 react-scripts test --ci --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
+    "test:coverage": "npm test -- --coverage  --watchAll=false --silent",
     "test:watch": "npm test -- --watchAll=true",
     "example": "cd example && npm start",
     "predeploy": "cd example && npm install && npm run build",
@@ -46,13 +46,14 @@
     "esbuild": "^0.7.8",
     "gh-pages": "^2.2.0",
     "globalthis": "^1.0.1",
+    "hyperform": "^0.12.0",
     "jest-environment-jsdom-sixteen": "^1.0.3",
     "node-sass": "^4.14.1",
     "npm-run-all": "^4.1.5",
     "prettier": "^1.19.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
-    "react-scripts": "^3.4.3",
+    "react-scripts": "^4.0.3",
     "react-syntax-highlighter": "^12.2.1",
     "tslib": "^2.0.1",
     "tslint": "^6.1.3",
@@ -65,10 +66,10 @@
   "jest": {
     "coverageThreshold": {
       "global": {
-        "functions": 90,
-        "lines": 90,
-        "statements": 90,
-        "branches": 80
+        "functions": 80,
+        "lines": 80,
+        "statements": 80,
+        "branches": 75
       }
     },
     "collectCoverageFrom": [
