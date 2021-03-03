@@ -1,8 +1,20 @@
 language: node_js
 node_js:
   - 12
-install:
-  - npm install
-  - npm test
-script:
-  - npm build
+jobs:
+  include:
+    - stage: ci
+      script:
+        - npm install
+        - npm test
+        - npm build
+    - stage: cd
+      script:
+        - npm install
+        - npm build
+        # todo - release with npm, then commit the result to github
+stages:
+  - name: ci
+    if: type = pull_request
+  - name: cd
+    if: type = push AND branch = master
