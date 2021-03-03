@@ -1,6 +1,6 @@
 # use-models
 
-[![NPM](https://img.shields.io/npm/v/use-models.svg)](https://www.npmjs.com/package/use-models) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com)[![Build Status](https://travis-ci.com/r3wt/use-models.svg?branch=master)](https://travis-ci.com/r3wt/use-models)
+[![NPM](https://img.shields.io/npm/v/use-models.svg)](https://www.npmjs.com/package/use-models) [![JavaScript Style Guide](https://img.shields.io/badge/code_style-standard-brightgreen.svg)](https://standardjs.com) [![Build Status](https://travis-ci.com/r3wt/use-models.svg?branch=master)](https://travis-ci.com/r3wt/use-models)
 
 advanced form model hooks for your functional react components. build huge, complex forms with validation using minimal boilerplate code.
 
