@@ -7,11 +7,11 @@ jobs:
       script:
         - npm install
         - npm test
-        - npm build
+        - npm run build
     - stage: cd
       script:
         - npm install
-        - npm build
+        - npm run build
         # todo - release with npm, then commit the result to github
 stages:
   - name: ci
