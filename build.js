@@ -1,8 +1,9 @@
 const { build } = require('esbuild');
 const pkg = require('./package.json');
 
-// build esnext
-build({
+const modulesToBuild = [pkg.module,pkg.main];
+
+Promise.all(modulesToBuild.map(moduleName=>build({
   entryPoints: [pkg.source],
   format: 'esm',
   outfile: pkg.module,
@@ -12,31 +13,11 @@ build({
   logLevel: 'info',
   sourcemap: true,
   external: ['react', 'react-dom']
-})
+}).then(()=>console.log('`%s` built successfully',moduleName))))
 .then(() => {
-  console.log('build succeeded');
+  console.log('all modules built successfully');
 })
-.catch((err) => {
-  console.warn('build failed', err);
+.catch((errors) => {
+  console.warn('one or more module builds failed', errors);
   process.exit(1);
-});
-
-// build commonjs
-build({
-  entryPoints: [pkg.source],
-  format: 'cjs',
-  outfile: pkg.main,
-  tsconfig: './tsconfig.json',
-  minify: true,
-  bundle: true,
-  logLevel: 'info',
-  sourcemap: true,
-  external: ['react', 'react-dom']
-})
-.then(() => {
-  console.log('build succeeded');
-})
-.catch((err) => {
-  console.warn('build failed', err);
-  process.exit(1)
 });
