@@ -6,7 +6,7 @@ const modulesToBuild = [pkg.module,pkg.main];
 Promise.all(modulesToBuild.map(moduleName=>build({
   entryPoints: [pkg.source],
   format: 'esm',
-  outfile: pkg.module,
+  outfile: moduleName,
   tsconfig: './tsconfig.build.json',
   minify: true,
   bundle: true,
