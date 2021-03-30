@@ -24,7 +24,8 @@
     "test:watch": "npm test -- --watchAll=true",
     "example": "cd example && npm start",
     "predeploy": "cd example && npm install && npm run build",
-    "deploy": "gh-pages -d example/build"
+    "deploy": "gh-pages -d example/build",
+    "coveralls": "cat ./coverage/lcov.info | coveralls"
   },
   "peerDependencies": {
     "react": "^16.0.0",
@@ -42,6 +43,7 @@
     "@types/react": "^16.9.50",
     "@types/react-dom": "^16.9.8",
     "@types/react-syntax-highlighter": "^11.0.5",
+    "coveralls": "^3.1.0",
     "cross-env": "^7.0.2",
     "esbuild": "^0.7.8",
     "gh-pages": "^2.2.0",

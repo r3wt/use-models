@@ -1,13 +1,16 @@
 language: node_js
 node_js:
   - 12
+env:
+  - COVERALLS_REPO_TOKEN=2SwwqC8QDQVmE6FkT71w2DgLmd0kc5Dh3 
 jobs:
   include:
     - stage: ci
       script:
         - npm install
-        - npm test
+        - npm run test:coverage
         - npm run build
+      after_success: 'npm run coveralls'
     - stage: cd
       script:
         - npm install
