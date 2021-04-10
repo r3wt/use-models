@@ -1,4 +1,30 @@
 language: node_js
 node_js:
   - 12
-  - 10
+env:
+  - COVERALLS_REPO_TOKEN=2SwwqC8QDQVmE6FkT71w2DgLmd0kc5Dh3 
+jobs:
+  include:
+    - stage: ci
+      script:
+        - npm install
+        - npm run test:coverage
+        - npm run build
+      after_success: 'npm run coveralls'
+stages:
+  - name: ci
+    if: type = pull_request
+  - name: cd
+    if: branch = master AND commit_message =~ /^[0-9]*\.[0-9]*\.[0-9]*$/
+    before_deploy:
+    - npm install
+    - npm run test:coverage
+    - npm run build
+    deploy:
+      edge: true
+      provider: npm
+      email: "$NPM_EMAIL"
+      api_key: "$NPM_TOKEN"
+      cleanup: true
+    after_success:
+    - npm run coveralls
