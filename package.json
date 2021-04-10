@@ -3,6 +3,9 @@
   "homepage": "https://r3wt.github.io/use-models",
   "version": "1.2.1",
   "private": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
