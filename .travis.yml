@@ -26,5 +26,6 @@ stages:
       email: "$NPM_EMAIL"
       api_key: "$NPM_TOKEN"
       skip_cleanup: true
+      cleanup: false
     after_success:
     - npm run coveralls
