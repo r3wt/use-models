@@ -273,7 +273,7 @@ describe('use-models',()=>{
   it('supports array in state',async()=>{
 
     const defaultState = {
-      items: [{ foo: 'test' },{ foo: 'bar' }]
+      items: [{ foo: 'test', checked: false },{ foo: 'bar', checked: false }]
     };
     function ComponentTest() {
       const {input,state} = useModels<{ items: { foo: string;}[] }>(defaultState);
@@ -309,5 +309,85 @@ describe('use-models',()=>{
     unmount();
 
   });
+
+  it('tests behavior of checkbox()',async()=>{
+
+    function Component() {
+      const { checkbox,state, watch } = useModels<{field: boolean}>({
+        field: false
+      });
+
+      watch('field',(newValue,oldValue)=>console.log('new: %s , old: %s',newValue,oldValue));
+
+      return (
+        <div>
+          <input data-testid="field" {...checkbox('field')} />
+          <div data-testid="state">{JSON.stringify(state)}</div>
+        </div>
+      )
+    }
+
+    const {unmount,getByTestId} = render(<Component />);
+
+    const field = await waitFor(()=>getByTestId('field'));
+
+    fireEvent.click(field);
+
+    expect(field).toBeChecked();
+
+    const state = await waitFor(()=>getByTestId('state'));
+
+    expect(state).toHaveTextContent('{"field":true}');
+
+    unmount();
+
+  });
+
+  it('tests behavior of checkbox()',async()=>{
+
+    function Component() {
+      const { radio,state, watch } = useModels<{field: string}>({
+        field: 'A'
+      });
+
+      watch('field',(newValue,oldValue)=>console.log('new: %s , old: %s',newValue,oldValue));
+
+      return (
+        <div>
+          <div>
+            <label for="field-a">A</label>
+            <input data-testid="field-a" {...radio('field','A')} />
+          </div>
+          <div>
+            <label for="field-b">A</label>
+            <input data-testid="field-b" {...radio('field','B')} />
+          </div>
+          <div data-testid="state">{JSON.stringify(state)}</div>
+        </div>
+      )
+    }
+
+    const {unmount,getByTestId} = render(<Component />);
+
+    const field = await waitFor(()=>getByTestId('field-a'));
+
+    expect(field).toBeChecked();
+
+    const state = await waitFor(()=>getByTestId('state'));
+
+    expect(state).toHaveTextContent('{"field":"A"}');
+
+    const fieldB = await waitFor(()=>getByTestId('field-b'));
+
+    fireEvent.click(fieldB);
+
+    expect(fieldB).toBeChecked();
+
+    expect(state).toHaveTextContent('{"field":"B"}');
+
+    unmount();
+
+  });
+
 
 });
