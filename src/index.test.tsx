@@ -355,11 +355,11 @@ describe('use-models',()=>{
       return (
         <div>
           <div>
-            <label for="field-a">A</label>
+            <label>A</label>
             <input data-testid="field-a" {...radio('field','A')} />
           </div>
           <div>
-            <label for="field-b">A</label>
+            <label>A</label>
             <input data-testid="field-b" {...radio('field','B')} />
           </div>
           <div data-testid="state">{JSON.stringify(state)}</div>
