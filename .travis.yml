@@ -28,5 +28,5 @@ stages:
   - name: ci
     if: type = pull_request
   - name: cd
-    if: branch = master AND commit_message =~ /^[0-9]*\.[0-9]*\.[0-9]*$/
+    if: branch = main AND commit_message =~ /^[0-9]*\.[0-9]*\.[0-9]*$/
     
