@@ -22,6 +22,8 @@ jobs:
         api_key: "$NPM_TOKEN"
         skip_cleanup: true
         cleanup: false
+        on:
+          branch: main
       after_success:
         - npm run coveralls
 stages:
