@@ -159,7 +159,7 @@ export type Options = {
   [k: string]: ModelOption | Options | any;
 };
 
-export default function useModels<T = any>(options: Options = {}) {
+export default function useModels<T = any>(options: Options) {
 
   const { defaultState, errorState, validationPaths } = parseOptions<T>(options);
   const watchPaths = {};
@@ -219,7 +219,7 @@ export default function useModels<T = any>(options: Options = {}) {
     const _state: T2 = { ...__state };
     const path = parsePath(name);
     if (path.length) {
-      var obj = _state;
+      let obj = _state;
       for (let i = 0; i < path.length - 1; i++) {
         obj = has(obj, path[i]) ? obj[path[i]] : {};
       }
@@ -232,7 +232,7 @@ export default function useModels<T = any>(options: Options = {}) {
     return {
       onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | any> | React.SyntheticEvent<EventTarget> | Event | any) => {
 
-        var value = e;//components like react-select-me pass primitive values
+        let value = e;//components like react-select-me pass primitive values
         if (has(e, 'value')) {
           value = (e as any).value;
         }
