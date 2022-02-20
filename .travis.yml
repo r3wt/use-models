@@ -10,12 +10,13 @@ jobs:
         - npm install
         - npm run test:coverage
         - npm run build
-      after_success: 'npm run coveralls'
+      after_success: 
+        - npm run coveralls
     - stage: cd
       before_deploy:
-      - npm install
-      - npm run test:coverage
-      - npm run build
+        - npm install
+        - npm run test:coverage
+        - npm run build
       deploy:
         edge: true
         provider: npm
@@ -24,7 +25,7 @@ jobs:
         skip_cleanup: true
         cleanup: false
       after_success:
-      - npm run coveralls
+        - npm run coveralls
 stages:
   - name: ci
     if: type = pull_request
