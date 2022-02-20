@@ -24,6 +24,7 @@
     "start": "run-s build example",
     "test": "cross-env CI=1 react-scripts test --ci --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
     "test:coverage": "npm test -- --coverage  --watchAll=false --silent",
+    "coveralls":"cat ./coverage/lcov.info | coveralls",
     "test:watch": "npm test -- --watchAll=true",
     "test:debug": "cross-env react-scripts test --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
     "example": "cd example && npm start",
