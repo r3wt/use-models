@@ -72,6 +72,23 @@ pre.debug {
   font-size: 20px;
 }
 
+.gh-mobile-tabs {
+  text-align: center;
+  width: 100%;
+}
+
+.gh-mobile-tabs > h1 {
+  margin: 15px 8px 0px;
+  padding: 6px 18px 8px;
+  border-radius: 3px;
+  font-size: 20px;
+  display: inline-block;
+  &.active {
+    color: #fff;
+    background-color: #1976d2;
+  }
+}
+
 .gh-50 > .box-1 {
   width: 80%;
   margin: 0 auto;
@@ -168,4 +185,55 @@ button {
 }
 .user-type-option.selected {
   border-color: #005cc8;
+}
+
+@media screen and (max-width: 500px) {
+  .title {
+    flex-wrap: wrap;
+    height: auto;
+    & .left, & .right {
+      flex: 0 0 100%;
+    }
+    & .right {
+      margin-top: 7px;
+      padding-left: 0 !important;
+    }
+  }
+}
+
+@media screen and (min-width:1025px) {
+  .gh-mobile-tabs {
+    display: none;
+  }
+}
+
+@media screen and (max-width:1024px) {
+  .title {
+    padding: 5px 14px;
+  }
+  .box-1, .box-2 {
+    width: 100% !important;
+  }
+  .form {
+    display: block !important;
+  }
+  .form > form {
+    width: 100%;
+    max-width: 500px !important;
+    padding: 25px;
+    max-width: none;
+  }
+  .gh-50 {
+    width: 100%;
+    display: none;
+    opacity: 0;
+    &.active {
+      display: block !important;
+      opacity: 1;
+      transition: opacity ease-in .1s;
+    }
+    & > h1 {
+      display: none;
+    }
+  }
 }

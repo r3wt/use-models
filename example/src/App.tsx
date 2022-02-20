@@ -1,4 +1,4 @@
-import React from 'react'
+import React,{useState} from 'react'
 import Form from './Form'
 
 import { PrismLight as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -137,6 +137,8 @@ export default function Form() {
 `
 
 export default function App() {
+  const [mobileActive,setMobileActive] = useState<number>(0);
+
   return (
     <div className='gh-example'>
       <div className='gh-100 title'>
@@ -149,7 +151,11 @@ export default function App() {
           <a href='https://github.com/r3wt/use-models'>[Github]</a>
         </div>
       </div>
-      <div className='gh-50'>
+      <div className="gh-mobile-tabs">
+        <h1 className={(mobileActive===0?'active':'')} onClick={()=>setMobileActive(0)}>Code:</h1>
+        <h1 className={(mobileActive===1?'active':'')} onClick={()=>setMobileActive(1)}>Output:</h1>
+      </div>
+      <div className={'gh-50 '+(mobileActive===0&&'active')}>
         <h1>Code:</h1>
         <div className='box-1'>
           <SyntaxHighlighter
@@ -161,7 +167,7 @@ export default function App() {
           </SyntaxHighlighter>
         </div>
       </div>
-      <div className='gh-50'>
+      <div className={'gh-50 '+(mobileActive===1&&'active')}>
         <h1>Output:</h1>
         <div className='box-2'>
           <Form />
