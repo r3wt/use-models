@@ -28,8 +28,7 @@
     "test:debug": "cross-env react-scripts test --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
     "example": "cd example && npm start",
     "predeploy": "cd example && npm install && npm run build",
-    "deploy": "gh-pages -d example/build",
-    "coveralls": "cat ./coverage/lcov.info | coveralls"
+    "deploy": "gh-pages -d example/build"
   },
   "peerDependencies": {
     "react": "^16.0.0",
