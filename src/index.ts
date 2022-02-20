@@ -86,17 +86,38 @@ function assignValues(optPointer: any, statePointer: any, errorPointer: any) {
       }
       if (shouldRecurse) {
         if (!has(statePointer, k)) {
-          statePointer[k] = {};
+          statePointer[k] = Array.isArray(optPointer[k]) ? [] : {};
         }
         if (!has(errorPointer, k)) {
-          errorPointer[k] = {};
+          errorPointer[k] = Array.isArray(optPointer[k]) ? [] : {};
         }
         assignValues(optPointer[k], statePointer[k], errorPointer[k]);
       }
     } else {
+      console.log('setting k',k, optPointer[k]);
       statePointer[k] = optPointer[k];
     }
   }
+}
+
+function deepClone(inObject:any) {
+  let outObject, value, key;
+
+  if (typeof inObject !== "object" || inObject === null) {
+    return inObject; // Return the value if inObject is not an object
+  }
+
+  // Create an array or object to hold the values
+  outObject = Array.isArray(inObject) ? [] : {};
+
+  for (key in inObject) {
+    value = inObject[key];
+
+    // Recursively (deep) copy for nested objects, including arrays
+    outObject[key] = deepClone(value);
+  }
+
+  return outObject;
 }
 
 export type ParseOptions = {
@@ -110,7 +131,9 @@ function parseOptions<T = any>(opts: ParseOptions) {
   const state = {};
   const errors = {};
   assignValues(opts, state, errors);//this recursive function will populate defaultState and errorOptions for us.
-  const errorState: ErrorState<T> = oSet({ ...state }, false);
+  console.log(state);
+  const errorState: ErrorState<T> = oSet(deepClone(state), false);
+  console.log(state);
   const validationPaths = getValidationPaths(errors);
 
   return { defaultState: state as T, errorState, validationPaths };

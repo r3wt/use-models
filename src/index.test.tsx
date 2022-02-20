@@ -270,4 +270,44 @@ describe('use-models',()=>{
     unmount();
   });
 
+  it('supports array in state',async()=>{
+
+    const defaultState = {
+      items: [{ foo: 'test' },{ foo: 'bar' }]
+    };
+    function ComponentTest() {
+      const {input,state} = useModels<{ items: { foo: string;}[] }>(defaultState);
+
+      return (
+        <div>
+          <input data-testid="foo0" {...input('items.0.foo')} />
+          <input data-testid="foo1" {...input('items.1.foo')} />
+          <div data-testid="state">{JSON.stringify(state)}</div>
+        </div>
+      )
+
+    }
+
+    const {unmount,getByTestId} = render(<ComponentTest />);
+
+    const state = await waitFor(()=>getByTestId("state"));
+
+    expect(state).toHaveTextContent(JSON.stringify(defaultState));
+
+    const foo1 = await waitFor(()=>getByTestId("foo0"));
+    const foo2 = await waitFor(()=>getByTestId("foo1"));
+
+    expect(foo1).toHaveValue("test");
+    expect(foo2).toHaveValue("bar");
+
+    fireEvent.change(foo1,{ target: { value: '25' }});
+    fireEvent.change(foo2,{ target: { value: '55' }});
+
+    expect(foo1).toHaveValue("25");
+    expect(foo2).toHaveValue("55");
+
+    unmount();
+
+  });
+
 });

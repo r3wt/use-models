@@ -1,7 +1,7 @@
 {
   "name": "use-models",
   "homepage": "https://r3wt.github.io/use-models",
-  "version": "1.2.3",
+  "version": "1.3.0",
   "private": false,
   "publishConfig": {
     "access": "public"
@@ -25,6 +25,7 @@
     "test": "cross-env CI=1 react-scripts test --ci --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
     "test:coverage": "npm test -- --coverage  --watchAll=false --silent",
     "test:watch": "npm test -- --watchAll=true",
+    "test:debug": "cross-env react-scripts test --testEnvironment=./src/setupJestEnv.js --setupFilesAfterEnv=./src/setupTests.ts",
     "example": "cd example && npm start",
     "predeploy": "cd example && npm install && npm run build",
     "deploy": "gh-pages -d example/build",
