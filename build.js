@@ -21,7 +21,9 @@ Promise.all(modulesToBuild.map(mod=>build({
   bundle: true,
   logLevel: 'info',
   sourcemap: true,
-  external: ['react', 'react-dom']
+  external: ['react', 'react-dom'],
+  pure:['console.log'],
+  minifySyntax: true,
 }).then(()=>console.log('`%s` built successfully',mod.file))))
 .then(() => {
   console.log('all modules built successfully');
