@@ -1,11 +1,5 @@
-export type ErrorLikeObject = {
-  message: string;
-};
-export type ValidatorFunctionReturnTypes = void | null | false | undefined | string | Error | ErrorLikeObject;
-export type ValidatorFunction = (val: any) => ValidatorFunctionReturnTypes | Promise<ValidatorFunctionReturnTypes>;
-
 // the built in validators
-const validators:Record<string,ValidatorFunction> = {
+const validators = {
   not_empty(value: string): void | string {
     return value.length === 0 ? 'can\'t be empty' : void 0;
   },

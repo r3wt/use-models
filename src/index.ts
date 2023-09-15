@@ -1,5 +1,8 @@
 import { useState, useCallback } from 'react';
-import validators,{ValidatorFunction,ErrorLikeObject} from './lib/validators';
+import validators from './lib/validators';
+
+export type ValidatorFunctionReturnTypes = void | null | false | undefined | string | Error | ErrorLikeObject;
+export type ValidatorFunction = (val: any) => ValidatorFunctionReturnTypes | Promise<ValidatorFunctionReturnTypes>;
 
 function extendValidators(name: string, fn: ValidatorFunction) {
   validators[name] = fn;
@@ -41,19 +44,16 @@ const getValidationPaths = (options: ParseOptions) => {
   return paths;
 }
 
-function execValidator(fn: ValidatorFunction | string, val: any):ReturnType<ValidatorFunction> {
+function execValidator(fn: ValidatorFunction | string, val: any) {
   const executor = typeof fn === 'function' ? fn : has(validators, fn) ? validators[fn] : function noop() { console.warn('built in validator with name `%s` not found. this is a no-op', fn) };//default-> no op
-  let res = executor(val);
-  if(!res) return Promise.resolve();
-  if(res instanceof Promise) {
-    return res;
+  const res = executor(val);
+  if (!(res instanceof Promise)) {
+    if (res) {
+      return Promise.reject(!(res instanceof Error) ? new Error(res) : res);
+    }
+    return Promise.resolve();
   }
-  else if(res instanceof Error || typeof res === 'object' && res.hasOwnProperty('message')){
-    return Promise.reject(new Error(res.message));
-  }
-  else if(typeof res === 'string'){
-    return Promise.reject(new Error(res));
-  }
+  return res;
 }
 
 function parsePath(path: string) {
@@ -101,7 +101,7 @@ function assignValues(optPointer: any, statePointer: any, errorPointer: any) {
 }
 
 function deepClone(inObject:any) {
-  let outObject:any|any[], value:any, key:number|string;
+  let outObject, value, key;
 
   if (typeof inObject !== "object" || inObject === null) {
     return inObject; // Return the value if inObject is not an object
@@ -139,6 +139,10 @@ function parseOptions<T = any>(opts: ParseOptions) {
   return { defaultState: state as T, errorState, validationPaths };
 }
 
+export type ErrorLikeObject = {
+  message: string;
+};
+
 function stringifyErr(err: string | ErrorLikeObject | unknown) {
   if (typeof err === 'string') {
     return err;
@@ -158,7 +162,7 @@ export type Options = {
 export default function useModels<T = any>(options: Options) {
 
   const { defaultState, errorState, validationPaths } = parseOptions<T>(options);
-  const watchPaths:Record<string,(newValue:string,oldValue:string)=>any> = {};
+  const watchPaths = {};
   const [state, setState] = useState<T>(defaultState);
   const [errors, setErrors] = useState<ErrorState<T>>(errorState);
 
@@ -181,7 +185,7 @@ export default function useModels<T = any>(options: Options) {
         errState = getUpdate<ErrorState<T>>(err.field, stringifyErr(err.error), errState);
       });
     }
-    setErrors(errState as ErrorState<T>);
+    setErrors(errState);
     return errs;
 
   }
@@ -204,7 +208,7 @@ export default function useModels<T = any>(options: Options) {
 
   function getValue(name: string) {
     const path = parsePath(name);
-    let value = state as any;
+    let value = state;
     for (let i = 0; i < path.length; i++) {
       value = value[path[i]];
     }
@@ -215,7 +219,7 @@ export default function useModels<T = any>(options: Options) {
     const _state: T2 = { ...__state };
     const path = parsePath(name);
     if (path.length) {
-      let obj:any = _state;
+      let obj = _state;
       for (let i = 0; i < path.length - 1; i++) {
         obj = has(obj, path[i]) ? obj[path[i]] : {};
       }
@@ -290,7 +294,7 @@ export default function useModels<T = any>(options: Options) {
     };
   };
 
-  function submit(cb: (state: T) => any | void) {
+  function submit(cb: (state: any) => any | void) {
     return async (e: React.FormEvent<EventTarget> | React.SyntheticEvent<EventTarget> | Event | any) => {
       e.preventDefault();
       const errs = await validate();
@@ -305,7 +309,7 @@ export default function useModels<T = any>(options: Options) {
 
   };
 
-  function error(cb: (errors: ErrorState<T>, state: T) => any | void) {
+  function error(cb: (errors: any, state: any) => any | void) {
 
     errorHandler = cb;
     return () => {
