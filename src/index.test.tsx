@@ -389,5 +389,41 @@ describe('use-models',()=>{
 
   });
 
+  it('tests behavior of validators on empty field',async()=>{
+
+    const defaultState = {
+      email: model('','email')
+    };
+    function ComponentTest() {
+      const {input, errors, submit} = useModels<{ email: string; }>(defaultState);
+
+      const onSubmit = submit(_state=>{
+
+      });
+
+      return (
+        <form onSubmit={onSubmit}>
+          <input data-testid="foo0" {...input('email','email')} />
+          {errors.email && <p data-testid="email-error">{errors.email}</p>}
+          <button type="submit">Submit</button>
+        </form>
+      )
+
+    }
+
+    const {unmount,getByText,getByTestId} = render(<ComponentTest />);
+
+    const submit = await waitFor(()=>getByText('Submit',{ selector: 'button' }));
+
+    expect(submit).toBeInTheDocument();
+
+    fireEvent.click(submit);
+
+    expect(waitFor(()=>getByTestId('email-error'))).rejects.toThrow();
+
+    unmount();
+
+  });
+
 
 });

@@ -2,9 +2,9 @@ import validators from './validators';
 
 describe('validators',()=>{
 
-  it('tests behavior of not_empty()',()=>{
-    expect(validators.not_empty('')).toBe('can\'t be empty');
-    expect(validators.not_empty('Test')).toBeUndefined();
+  it('tests behavior of required()',()=>{
+    expect(validators.required('')).toBe('can\'t be empty');
+    expect(validators.required('Test')).toBeUndefined();
   });
 
   it('tests behavior of email()',()=>{
