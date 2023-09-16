@@ -6,7 +6,7 @@ export type ValidatorFunction = (val: any) => ValidatorFunctionReturnTypes | Pro
 
 // the built in validators
 const validators:Record<string,ValidatorFunction> = {
-  not_empty(value: string): void | string {
+  required(value: string): void | string {
     return value.length === 0 ? 'can\'t be empty' : void 0;
   },
   email(value: string): void | string {
@@ -15,7 +15,7 @@ const validators:Record<string,ValidatorFunction> = {
     input.value = value;
     let result = input.checkValidity();
     const parts = value.split('@');
-    if (!result || parts[1].indexOf('.') <= 0) {
+    if (!result || Array.isArray(parts) && parts.length >= 2 && parts[1].indexOf('.') <= 0) {
       return 'Invalid Email Address';
     }
   },
@@ -37,3 +37,16 @@ const validators:Record<string,ValidatorFunction> = {
 };
 
 export default validators;
+
+export function extendValidators(name: string, fn: ValidatorFunction) {
+  validators[name] = fn;
+};
+
+export type ModelOption = {
+  value: any;
+  validate: Array<ValidatorFunction | string>;
+}
+
+export function model(value: any, ...validate: Array<ValidatorFunction | string>) {
+  return { value, validate } as ModelOption;
+}

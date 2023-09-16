@@ -1,18 +1,5 @@
 import { useState, useCallback } from 'react';
-import validators,{ValidatorFunction,ErrorLikeObject} from './lib/validators';
-
-function extendValidators(name: string, fn: ValidatorFunction) {
-  validators[name] = fn;
-};
-
-export type ModelOption = {
-  value: any;
-  validate: Array<ValidatorFunction | string>;
-}
-
-function model(value: any, ...validate: Array<ValidatorFunction | string>) {
-  return { value, validate } as ModelOption;
-}
+import validators,{ extendValidators, model, ModelOption, ValidatorFunction, ErrorLikeObject } from './lib/validators';
 
 export { extendValidators, model };
 
