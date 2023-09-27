@@ -334,7 +334,7 @@ export default function useModels<T = any>(options: Options) {
     return getValue(name);
   }
 
-  const hydrate = useCallback((_state: any, _errors: any = false) => {
+  const hydrate = useCallback((_state: Partial<T>, _errors?: Partial<ErrorState<T>>) => {
 
     setState({ ...state, ..._state });
     if (_errors) {
